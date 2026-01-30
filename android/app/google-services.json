@@ -1,0 +1,98 @@
+{
+  "project_info": {
+    "project_number": "476899420653",
+    "project_id": "safeplate-a14e9",
+    "storage_bucket": "safeplate-a14e9.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:476899420653:android:efe39c7b04a9a23003dfe4",
+        "android_client_info": {
+          "package_name": "com.safeplate.cliente"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "476899420653-smk0ms5h58vjp0lih3uhnt5mtud2obn9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.safeplate.cliente",
+            "certificate_hash": "0215aaf1e936991e03f46f80bb961ff8e53c23af"
+          }
+        },
+        {
+          "client_id": "476899420653-32m5g35ltk24e92426rnpde37s0tpthu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBhAWZ61YF4Qhl_GJjRl6avMpkUZuK6n8k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "476899420653-32m5g35ltk24e92426rnpde37s0tpthu.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "476899420653-445htije8i2m08vpc7lkos6bfpjjlaln.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.safeplate.empresa"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:476899420653:android:7ccfb6e1628b414803dfe4",
+        "android_client_info": {
+          "package_name": "com.safeplate.empresa"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "476899420653-0dhib9ilrmk5546n4uhn8ahlmioebnt1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.safeplate.empresa",
+            "certificate_hash": "c4713e173c31cc9a1da408b34d49434dc182511f"
+          }
+        },
+        {
+          "client_id": "476899420653-32m5g35ltk24e92426rnpde37s0tpthu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBhAWZ61YF4Qhl_GJjRl6avMpkUZuK6n8k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "476899420653-32m5g35ltk24e92426rnpde37s0tpthu.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "476899420653-445htije8i2m08vpc7lkos6bfpjjlaln.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.safeplate.empresa"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
