@@ -894,9 +894,9 @@ class _HomeScreenState extends State<HomeScreen> {
     } else if (isPremiumUser) {
       headerStartColor = AppTheme.premiumBlueLight;
       headerEndColor = AppTheme.premiumBlueDark;
-    } else {
-      headerStartColor = AppTheme.primaryGreen.withValues(alpha: 0.20);
-      headerEndColor = AppTheme.secondaryGreen.withValues(alpha: 0.28);
+     } else {
+      headerStartColor = AppTheme.primaryGreen;
+      headerEndColor = AppTheme.secondaryGreen;
     }
 
     Color filterIconColor = AppTheme.premiumBlue;

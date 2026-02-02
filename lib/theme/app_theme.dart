@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
@@ -34,7 +35,11 @@ class AppTheme {
         background: background,
         onPrimary: Colors.white,
         onSecondary: Colors.white,
+      ).copyWith(
+        surfaceTint: Colors.transparent,
       ),
+      canvasColor: background,
+      dialogBackgroundColor: surface,
       
       // Tipografia Moderna
       textTheme: GoogleFonts.poppinsTextTheme().copyWith(
@@ -131,6 +136,14 @@ class AppTheme {
         elevation: 0,
         centerTitle: false,
         scrolledUnderElevation: 0,
+        surfaceTintColor: Colors.transparent,
+        shadowColor: Colors.transparent,
+        foregroundColor: textPrimary,
+        systemOverlayStyle: const SystemUiOverlayStyle(
+          statusBarColor: background,
+          statusBarBrightness: Brightness.light,
+          statusBarIconBrightness: Brightness.dark,
+        ),
         titleTextStyle: GoogleFonts.poppins(
           color: textPrimary,
           fontSize: 20,
@@ -141,13 +154,17 @@ class AppTheme {
 
       // Navigation Bar
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-        backgroundColor: Colors.transparent,
+        backgroundColor: surface,
         elevation: 0,
         selectedItemColor: primaryGreen,
         unselectedItemColor: Colors.grey,
         type: BottomNavigationBarType.fixed,
         showSelectedLabels: false,
         showUnselectedLabels: false,
+      ),
+      bottomSheetTheme: const BottomSheetThemeData(
+        backgroundColor: surface,
+        surfaceTintColor: Colors.transparent,
       ),
     );
   }

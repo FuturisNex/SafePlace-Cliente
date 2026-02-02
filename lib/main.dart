@@ -55,14 +55,19 @@ class SafePlateApp extends StatelessWidget {
       child: Consumer<LocaleProvider>(
         builder: (context, localeProvider, _) {
           return MaterialApp(
-        title: 'Prato Seguro',
-        debugShowCheckedModeBanner: false,
+            title: 'Prato Seguro',
+            debugShowCheckedModeBanner: false,
+            debugShowMaterialGrid: false,
+            showPerformanceOverlay: false,
+            showSemanticsDebugger: false,
+            checkerboardOffscreenLayers: false,
+            checkerboardRasterCacheImages: false,
             locale: localeProvider.locale,
-        theme: AppTheme.lightTheme,
-        home: const SplashScreen(),
-        routes: {
-          '/login': (context) => const LoginScreen(),
-          '/home': (context) => const HomeScreen(),
+            theme: AppTheme.lightTheme,
+            home: const SplashScreen(),
+            routes: {
+              '/login': (context) => const LoginScreen(),
+              '/home': (context) => const HomeScreen(),
             },
           );
         },
