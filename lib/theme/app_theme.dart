@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
@@ -139,11 +138,6 @@ class AppTheme {
         surfaceTintColor: Colors.transparent,
         shadowColor: Colors.transparent,
         foregroundColor: textPrimary,
-        systemOverlayStyle: const SystemUiOverlayStyle(
-          statusBarColor: background,
-          statusBarBrightness: Brightness.light,
-          statusBarIconBrightness: Brightness.dark,
-        ),
         titleTextStyle: GoogleFonts.poppins(
           color: textPrimary,
           fontSize: 20,

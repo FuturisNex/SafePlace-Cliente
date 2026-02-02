@@ -583,11 +583,12 @@ class _LoginScreenState extends State<LoginScreen> {
                 ],
               ),
               const SizedBox(height: 14),
-              GoogleSignInButton(
-                onPressed: _isLoading ? null : _handleGoogleLogin,
-                isLoading: _isLoading,
-                text: Translations.getText(context, 'continueWithGoogle'),
-              ),
+              if (!Platform.isIOS)
+                GoogleSignInButton(
+                  onPressed: _isLoading ? null : _handleGoogleLogin,
+                  isLoading: _isLoading,
+                  text: Translations.getText(context, 'continueWithGoogle'),
+                ),
               const SizedBox(height: 12),
               if (Platform.isIOS)
                 SignInWithAppleButton(

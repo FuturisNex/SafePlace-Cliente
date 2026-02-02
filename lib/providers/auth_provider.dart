@@ -1,9 +1,12 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'dart:async';
 import 'dart:convert';
+import 'package:crypto/crypto.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
@@ -950,12 +953,16 @@ class AuthProvider with ChangeNotifier {
         return false;
       }
 
+      final rawNonce = _generateNonce();
+      final hashedNonce = _sha256ofString(rawNonce);
+
       final AuthorizationCredentialAppleID appleCredential =
           await SignInWithApple.getAppleIDCredential(
         scopes: [
           AppleIDAuthorizationScopes.email,
           AppleIDAuthorizationScopes.fullName,
         ],
+        nonce: hashedNonce,
       );
 
       if (appleCredential.identityToken == null) {
@@ -968,6 +975,7 @@ class AuthProvider with ChangeNotifier {
       final oauthCredential = OAuthProvider('apple.com').credential(
         idToken: appleCredential.identityToken,
         accessToken: appleCredential.authorizationCode,
+        rawNonce: rawNonce,
       );
 
       final UserCredential userCredential =
@@ -1001,6 +1009,10 @@ class AuthProvider with ChangeNotifier {
       if (e.code == AuthorizationErrorCode.canceled) {
         // Usuário cancelou, não tratar como erro grave
         _errorMessage = null;
+      } else if (e.code == AuthorizationErrorCode.unknown) {
+        debugPrint('❌ Erro na autorização Apple (unknown): $e');
+        _errorMessage =
+            'Não foi possível autorizar com a Apple. Verifique sua conta Apple e tente novamente.';
       } else {
         debugPrint('❌ Erro na autorização Apple: ${e.code} - $e');
         _errorMessage = 'Erro ao fazer login com Apple. Tente novamente.';
@@ -1021,6 +1033,20 @@ class AuthProvider with ChangeNotifier {
       notifyListeners();
       return false;
     }
+  }
+
+  String _generateNonce([int length = 32]) {
+    const charset =
+        '0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._';
+    final random = Random.secure();
+    return List.generate(length, (_) => charset[random.nextInt(charset.length)])
+        .join();
+  }
+
+  String _sha256ofString(String input) {
+    final bytes = utf8.encode(input);
+    final digest = sha256.convert(bytes);
+    return digest.toString();
   }
 
   Future<void> logout() async {

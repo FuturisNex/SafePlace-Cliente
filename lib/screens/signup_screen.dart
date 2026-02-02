@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
@@ -282,7 +284,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ],
               ),
               const SizedBox(height: 12),
-              GoogleSignInButton(onPressed: _loading ? null : _signInWithGoogle, text: 'Continuar com Google', isLoading: _loading),
+              if (!Platform.isIOS)
+                GoogleSignInButton(onPressed: _loading ? null : _signInWithGoogle, text: 'Continuar com Google', isLoading: _loading),
               const SizedBox(height: 12),
               _buildLanguageSelector(),
               const SizedBox(height: 18),
