@@ -44,6 +44,23 @@ class AuthProvider with ChangeNotifier {
     _checkAuthState();
   }
 
+  Future<bool> _enforceAppAccountType({String? origin}) async {
+    if (_user == null) return false;
+    if (_user!.type == kForcedUserType) return false;
+
+    debugPrint(
+        '⚠️ Conta incompatível detectada${origin == null ? '' : ' ($origin)'}: '
+        'userType=${_user!.type.toString().split('.').last}, '
+        'appType=${kForcedUserType.toString().split('.').last}');
+
+    _errorMessage =
+        'Esta conta é do tipo "${_user!.type == model.UserType.business ? 'business' : 'user'}" '
+        'e não é compatível com esta variante do app.';
+
+    await logout();
+    return true;
+  }
+
   /// Aguarda a inicialização do AuthProvider (carregamento do estado de autenticação)
   Future<void> waitForInitialization() async {
     if (_isInitialized) return;
@@ -174,8 +191,12 @@ class AuthProvider with ChangeNotifier {
         debugPrint('🔐 Firebase Auth: usuário autenticado (${currentUser.uid})');
         // Carregar dados locais primeiro para não travar
         await _loadUser();
+        final mismatchLocal = await _enforceAppAccountType(origin: 'cache');
+        if (mismatchLocal) return;
         // Depois tentar atualizar do Firestore (sem bloquear)
-        _loadUserFromFirebase(currentUser).then((_) {
+        _loadUserFromFirebase(currentUser).then((_) async {
+          final mismatchRemote = await _enforceAppAccountType(origin: 'firestore');
+          if (mismatchRemote) return;
           // Inicializar notificações push após carregar usuário
           if (_user != null) {
             NotificationService.initialize(_user!.id).catchError((e) {
@@ -191,6 +212,7 @@ class AuthProvider with ChangeNotifier {
       } else {
         debugPrint('🔐 Firebase Auth: nenhum usuário autenticado, tentando carregar do cache local');
         await _loadUser();
+        await _enforceAppAccountType(origin: 'cache-no-firebase');
         _applyPreferredLanguage();
       }
     } catch (e) {
@@ -913,6 +935,16 @@ class AuthProvider with ChangeNotifier {
       await prefs.setString('userType', userType.toString().split('.').last);
 
       await _loadUserFromFirebase(userCredential.user!, preferredLanguage: preferredLanguage);
+
+      if (_user != null && _user!.type != userType) {
+        _errorMessage =
+            'Esta conta é do tipo "${_user!.type == model.UserType.business ? 'business' : 'user'}" '
+            'e não é compatível com esta variante do app.';
+        await logout();
+        _isLoading = false;
+        notifyListeners();
+        return false;
+      }
 
       if (_user != null) {
         NotificationService.initialize(_user!.id).catchError((e) {
