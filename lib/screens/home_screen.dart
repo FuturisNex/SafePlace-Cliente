@@ -32,7 +32,7 @@ import 'delivery_screen.dart';
 import 'business_delivery_screen.dart';
 
 const String kOfficialWhatsAppGroupUrl =
-    'https://chat.whatsapp.com/GRUPO_OFICIAL_PRATO_SEGURO';
+    'https://chat.whatsapp.com/IuE89tj34QJ3sSk8kiy7ho?mode=gi_t';
 const String kNationalFairUrl =
     'https://pratoseguro.com/feira'; // TODO: Atualizar para a URL oficial da feira
 

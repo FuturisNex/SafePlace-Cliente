@@ -45,6 +45,23 @@ class MapboxService {
         return null;
       }
 
+      // Garantir que o Geolocator também esteja sincronizado com a permissão concedida
+      // (evita o bug de o Geolocator continuar reportando DENIED até reiniciar o app)
+      var geoPermission = await geo.Geolocator.checkPermission();
+      if (geoPermission == geo.LocationPermission.denied) {
+        geoPermission = await geo.Geolocator.requestPermission();
+        if (geoPermission == geo.LocationPermission.denied ||
+            geoPermission == geo.LocationPermission.deniedForever) {
+          debugPrint('Permissão de localização negada pelo Geolocator');
+          return null;
+        }
+      }
+
+      if (geoPermission == geo.LocationPermission.deniedForever) {
+        debugPrint('Permissão de localização negada permanentemente (Geolocator)');
+        return null;
+      }
+
       return await geo.Geolocator.getCurrentPosition(
         desiredAccuracy: geo.LocationAccuracy.high,
       );

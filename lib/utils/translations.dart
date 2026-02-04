@@ -16,7 +16,7 @@ class Translations {
       case 'openNow':
         return languageCode == 'pt' ? 'Abertos' : languageCode == 'es' ? 'Abiertos' : 'Open Now';
       case 'achievements':
-        return languageCode == 'pt' ? 'Conquistas' : languageCode == 'es' ? 'Logros' : 'Achievements';
+        return languageCode == 'pt' ? 'Conquista' : languageCode == 'es' ? 'Logros' : 'Achievements';
       case 'about':
         return languageCode == 'pt' ? 'Sobre' : languageCode == 'es' ? 'Acerca de' : 'About';
 
