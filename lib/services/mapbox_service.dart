@@ -27,9 +27,23 @@ class MapboxService {
 
       return await geo.Geolocator.getCurrentPosition(
         desiredAccuracy: geo.LocationAccuracy.high,
+        timeLimit: const Duration(seconds: 8),
       );
     } catch (e) {
       debugPrint('Erro ao obter posição: $e');
+      return null;
+    }
+  }
+
+  // Obter a última posição conhecida, se disponível (mais rápido no primeiro uso)
+  static Future<geo.Position?> getLastKnownPosition() async {
+    try {
+      final hasPermission = await ensureLocationPermission();
+      if (!hasPermission) return null;
+
+      return await geo.Geolocator.getLastKnownPosition();
+    } catch (e) {
+      debugPrint('Erro ao obter última posição conhecida: $e');
       return null;
     }
   }

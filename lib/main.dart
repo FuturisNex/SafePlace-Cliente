@@ -9,6 +9,7 @@ import 'providers/review_provider.dart';
 import 'providers/cart_provider.dart';
 import 'providers/feature_flags_provider.dart';
 import 'services/notification_service.dart';
+import 'services/mapbox_service.dart';
 import 'theme/app_theme.dart';
 import 'screens/splash_screen.dart';
 import 'screens/login_screen.dart';
@@ -31,6 +32,8 @@ void main() async {
   }
   
   await NotificationService.initializeLocalNotifications();
+
+  await MapboxService.initialize();
   
   // Inicializar IAP no iOS
   IapService().initialize();

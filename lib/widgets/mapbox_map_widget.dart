@@ -62,13 +62,16 @@ class MapboxMapWidgetState extends State<MapboxMapWidget>
       false; // Evita mostrar o dialog de "sem resultados" repetidamente
   Offset? _pointerDownPosition;
   bool _isDragging = false;
+  bool _isInitializingLocation = false;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     MapboxService.initialize();
-    _initLocation();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _initLocation();
+    });
     _loadPreferredDietaryFilters();
   }
 
@@ -88,20 +91,26 @@ class MapboxMapWidgetState extends State<MapboxMapWidget>
   }
 
   Future<void> _initLocation() async {
-    final hasPermission = await MapboxService.ensureLocationPermission();
-    if (!hasPermission) {
-      debugPrint(
-          '⚠️ Permissão de localização não concedida, não iniciando stream contínuo');
-      return;
+    if (_isInitializingLocation) return;
+    _isInitializingLocation = true;
+    try {
+      final hasPermission = await MapboxService.ensureLocationPermission();
+      if (!hasPermission) {
+        debugPrint(
+            '⚠️ Permissão de localização não concedida, não iniciando stream contínuo');
+        return;
+      }
+
+      // Primeiro, tentar obter a posição atual (isso já cuida de pedir permissão)
+      await _getUserLocation();
+
+      if (!mounted) return;
+
+      // Iniciar stream contínuo após permissão confirmada
+      _startLocationUpdates();
+    } finally {
+      _isInitializingLocation = false;
     }
-
-    // Primeiro, tentar obter a posição atual (isso já cuida de pedir permissão)
-    await _getUserLocation();
-
-    if (!mounted) return;
-
-    // Iniciar stream contínuo após permissão confirmada
-    _startLocationUpdates();
   }
 
   @override
@@ -128,6 +137,13 @@ class MapboxMapWidgetState extends State<MapboxMapWidget>
   }
 
   Future<void> _getUserLocation() async {
+    final lastKnown = await MapboxService.getLastKnownPosition();
+    if (mounted && lastKnown != null) {
+      setState(() {
+        _userPosition = lastKnown;
+      });
+    }
+
     final position = await MapboxService.getCurrentPosition();
     if (mounted && position != null) {
       setState(() {
