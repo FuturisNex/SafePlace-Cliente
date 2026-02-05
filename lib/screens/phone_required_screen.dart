@@ -203,7 +203,7 @@ class _PhoneRequiredScreenState extends State<PhoneRequiredScreen> {
                   ],
                   decoration: InputDecoration(
                     labelText: 'Telefone com DDD *',
-                    hintText: '(41) 99688-5614',
+                    hintText: '(DD) 9XXXX-XXXX',
                     prefixIcon: const Icon(Icons.phone),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),

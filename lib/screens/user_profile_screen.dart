@@ -440,7 +440,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                     keyboardType: TextInputType.phone,
                     decoration: const InputDecoration(
                       labelText: 'Telefone com DDD',
-                      hintText: '(41) 99624-3262',
+                      hintText: '(DD) 9XXXX-XXXX',
                     ),
                     onChanged: (value) {
                       final digits = value.replaceAll(RegExp(r'[^0-9]'), '');
