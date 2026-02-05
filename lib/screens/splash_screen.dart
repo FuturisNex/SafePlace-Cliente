@@ -11,6 +11,8 @@ import 'home_screen.dart';
 import 'onboarding_screen.dart';
 import 'language_selection_screen.dart';
 import 'phone_required_screen.dart';
+import '../config.dart';
+import '../models/user.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -50,6 +52,11 @@ class _SplashScreenState extends State<SplashScreen> {
     final hasSelectedLanguage = prefs.getBool('hasSelectedLanguage') ?? false;
     final hasSeenOnboarding =
         prefs.getBool(OnboardingScreen.hasSeenOnboardingKey) ?? false;
+    final isBusinessVariant = kForcedUserType == UserType.business;
+
+    if (authProvider.isAuthenticated && authProvider.user?.type != kForcedUserType) {
+      await authProvider.logout();
+    }
 
     if (!hasSelectedLanguage) {
       Navigator.of(context).pushReplacement(
@@ -58,7 +65,7 @@ class _SplashScreenState extends State<SplashScreen> {
       return;
     }
 
-    if (!hasSeenOnboarding) {
+    if (!hasSeenOnboarding && !isBusinessVariant) {
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (_) => const OnboardingScreen()),
       );

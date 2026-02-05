@@ -50,6 +50,23 @@ class _SignUpScreenState extends State<SignUpScreen> {
     ScaffoldMessenger.of(context).showSnackBar(snack);
   }
 
+  String _forcedAccountTypeString() {
+    return kForcedUserType == UserType.business ? 'business' : 'user';
+  }
+
+  Future<bool> _checkAndHandleTypeMismatch(app_auth.AuthProvider authProvider) async {
+    final userType = authProvider.user?.type;
+    if (userType != null && userType != kForcedUserType) {
+      await authProvider.logout();
+      _showSnack(
+        'Esta conta é do tipo "${userType == UserType.business ? 'business' : 'user'}" e não é compatível com esta variante do app.',
+        error: true,
+      );
+      return true;
+    }
+    return false;
+  }
+
   Future<void> _submit() async {
     if (!_acceptedTerms) {
       _showSnack('Você precisa aceitar os Termos de Uso e a Política de Privacidade', error: true);
@@ -86,7 +103,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           'email': email,
           'phone': phone,
           'createdAt': FieldValue.serverTimestamp(),
-          'type': APP_ACCOUNT_TYPE, // Preservar o tipo de conta
+          'type': _forcedAccountTypeString(), // Preservar o tipo de conta
         }, SetOptions(merge: true));
         _showSnack('Conta criada com sucesso');
         if (!mounted) return;
@@ -114,12 +131,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
       languageCode = _selectedLanguage ?? 'pt';
     }
 
-    final result = await authProvider.loginWithGoogleAdvanced(UserType.user, preferredLanguage: languageCode);
+    final result = await authProvider.loginWithGoogleAdvanced(
+      kForcedUserType,
+      preferredLanguage: languageCode,
+    );
     setState(() => _loading = false);
 
     if (!mounted) return;
 
     if (result['success'] == true) {
+      final mismatch = await _checkAndHandleTypeMismatch(authProvider);
+      if (mismatch) return;
       _showSnack('Login com Google realizado');
       Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => const HomeScreen()));
     } else if (result['error'] != null) {

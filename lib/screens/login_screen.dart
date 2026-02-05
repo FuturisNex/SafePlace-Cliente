@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart' show AuthCredential;
-import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:flutter/gestures.dart';
 
@@ -22,12 +21,6 @@ import 'phone_required_screen.dart';
 import 'terms_screen.dart';
 import 'privacy_policy_screen.dart';
 import '../config.dart';
-
-/// Flag oculta: altere aqui para compilar o app como empresa ou cliente.
-/// Ex.: UserType.business para compilar a variante "empresa".
-final UserType kForcedUserType = (APP_ACCOUNT_TYPE.toLowerCase() == 'business')
-    ? UserType.business
-    : UserType.user;
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -81,9 +74,8 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<bool> _checkAndHandleTypeMismatch(AuthProvider authProvider) async {
     final userType = authProvider.user?.type;
     if (userType != null && userType != kForcedUserType) {
-      // Desloga (Firebase) para limpar sessão local.
       try {
-        await firebase_auth.FirebaseAuth.instance.signOut();
+        await authProvider.logout();
       } catch (_) {}
       _showSnack(
           'Esta conta é do tipo "${userType == UserType.business ? 'business' : 'user'}" e não é compatível com esta variante do app.',

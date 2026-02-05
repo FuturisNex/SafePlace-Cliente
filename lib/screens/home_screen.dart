@@ -30,6 +30,7 @@ import 'business_establishments_screen.dart';
 import 'boost_overview_screen.dart';
 import 'delivery_screen.dart';
 import 'business_delivery_screen.dart';
+import '../config.dart';
 
 const String kOfficialWhatsAppGroupUrl =
     'https://chat.whatsapp.com/IuE89tj34QJ3sSk8kiy7ho?mode=gi_t';
@@ -48,6 +49,9 @@ enum _SeasonalVariant { none, christmas, carnival }
 class _HomeScreenState extends State<HomeScreen> {
   int get _initialIndex {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    if (kForcedUserType == UserType.business) {
+      return 0;
+    }
     return authProvider.isAuthenticated ? 0 : 1; // Busca se logado, Login se não
   }
 
@@ -645,6 +649,16 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   List<Widget> _buildScreens(AuthProvider authProvider, bool hasBoostAccess, bool deliveryEnabled, {Widget? header}) {
+    final isBusinessVariant = kForcedUserType == UserType.business;
+
+    if (authProvider.isAuthenticated && authProvider.user?.type != kForcedUserType) {
+      return [const LoginScreen()];
+    }
+
+    if (isBusinessVariant && !authProvider.isAuthenticated) {
+      return [const LoginScreen()];
+    }
+
     if (authProvider.isAuthenticated) {
       final user = authProvider.user;
       // Se está logado como empresa, mostrar dashboard como home
@@ -688,6 +702,9 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     } else {
       // Se não está logado
+      if (isBusinessVariant) {
+        return [const LoginScreen()];
+      }
       if (deliveryEnabled) {
         return [
           SearchScreen(key: SearchScreen.searchKey, header: header), // Índice 0 - Mapa
@@ -715,6 +732,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final currentUser = authProvider.user;
     final bool isBusinessUser =
         authProvider.isAuthenticated && currentUser?.type == UserType.business;
+    final bool isBusinessVariant = kForcedUserType == UserType.business;
     final bool isPremiumUser = currentUser?.isPremiumActive ?? false;
     final bool deliveryEnabled = featureFlags.deliveryEnabled;
     
@@ -771,7 +789,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
                   // Se for a tela de busca (mapa), ela gerencia seu próprio header para ficar transparente
                   // Assumindo que SearchScreen é sempre o índice 0 para usuários não-business
-                  final isSearchScreen = !isBusinessUser && currentScreenIndex == 0;
+                    final isSearchScreen =
+                      !isBusinessUser && !isBusinessVariant && currentScreenIndex == 0;
 
                   if (isSearchScreen) {
                     return currentScreen;
@@ -873,6 +892,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final user = authProvider.user;
 
     final bool isBusinessUser = user?.type == UserType.business;
+    final bool isBusinessVariant = kForcedUserType == UserType.business;
     final bool isPremiumUser = user?.isPremiumActive ?? false;
     final seasonalVariant = _getSeasonalVariant(seasonalThemeKey);
 
@@ -907,17 +927,15 @@ class _HomeScreenState extends State<HomeScreen> {
       filterBadgeIconColor = const Color(0xFFFFD700);
     }
 
-    final String appTitleText = isBusinessUser
+    final String appTitleText = (isBusinessVariant || isBusinessUser)
         ? Translations.getText(context, 'appNameBusiness')
         : Translations.getText(context, 'appName');
 
     // Header expandido apenas na "home" de busca para usuários finais.
     // Para contas empresariais, o header é compacto (sem barra de busca/mapa).
-    final bool isExpandedHeader = user?.type == UserType.business
-        ? false
-        : (authProvider.isAuthenticated
-            ? _selectedIndex == 0
-            : _selectedIndex == 1);
+    final bool isExpandedHeader = (isBusinessVariant || user?.type == UserType.business)
+      ? false
+      : (authProvider.isAuthenticated ? _selectedIndex == 0 : _selectedIndex == 1);
     
     return Stack(
       children: [
@@ -987,42 +1005,42 @@ class _HomeScreenState extends State<HomeScreen> {
                       ],
                     ),
                   ),
-                  // Actions: FAQ, Ranking, User Search & Notification
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.emoji_events, color: Color(0xFFFFD700)),
-                        onPressed: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (_) => const LeaderboardScreen(),
-                            ),
-                          );
-                        },
-                        tooltip: Translations.getText(context, 'topReviewers'),
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.person_search, color: Colors.white),
-                        onPressed: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (_) => const UserSearchScreen(),
-                            ),
-                          );
-                        },
-                        tooltip: Translations.getText(context, 'userSearchTitle'),
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.notifications_outlined, color: Colors.white),
-                        onPressed: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(builder: (_) => const NotificationsScreen()),
-                          );
-                        },
-                      ),
-                    ],
-                  ),
+                  if (!isBusinessVariant)
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.emoji_events, color: Color(0xFFFFD700)),
+                          onPressed: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) => const LeaderboardScreen(),
+                              ),
+                            );
+                          },
+                          tooltip: Translations.getText(context, 'topReviewers'),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.person_search, color: Colors.white),
+                          onPressed: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) => const UserSearchScreen(),
+                              ),
+                            );
+                          },
+                          tooltip: Translations.getText(context, 'userSearchTitle'),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.notifications_outlined, color: Colors.white),
+                          onPressed: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(builder: (_) => const NotificationsScreen()),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
                 ],
               ),
               const SizedBox(height: 16),
@@ -1205,6 +1223,26 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   List<BottomNavigationBarItem> _buildBottomNavItems(BuildContext context, AuthProvider authProvider, bool hasBoostAccess, bool deliveryEnabled) {
+    final isBusinessVariant = kForcedUserType == UserType.business;
+
+    if (authProvider.isAuthenticated && authProvider.user?.type != kForcedUserType) {
+      return [
+        BottomNavigationBarItem(
+          icon: const Icon(Icons.login),
+          label: Translations.getText(context, 'navLogin'),
+        ),
+      ];
+    }
+
+    if (isBusinessVariant && !authProvider.isAuthenticated) {
+      return [
+        BottomNavigationBarItem(
+          icon: const Icon(Icons.login),
+          label: Translations.getText(context, 'navLogin'),
+        ),
+      ];
+    }
+
     if (authProvider.isAuthenticated) {
       final user = authProvider.user;
       if (user?.type == UserType.business) {

@@ -289,8 +289,13 @@ class AuthProvider with ChangeNotifier {
 
   Future<void> _loadUserFromFirebase(User firebaseUser, {String? preferredLanguage}) async {
     try {
-      final userTypeString = await SharedPreferences.getInstance()
-          .then((prefs) => prefs.getString('userType') ?? 'user');
+      final userTypeString = await SharedPreferences.getInstance().then((prefs) {
+        final storedType = prefs.getString('userType');
+        if (storedType != null && storedType.isNotEmpty) {
+          return storedType;
+        }
+        return kForcedUserType == model.UserType.business ? 'business' : 'user';
+      });
       
       // Tentar carregar dados do Firestore primeiro (com timeout)
       model.User? firestoreUser;
@@ -383,8 +388,13 @@ class AuthProvider with ChangeNotifier {
       debugPrint('Erro ao carregar usuário do Firebase: $e');
       // Mesmo com erro, criar usuário básico com trial Premium de TRIAL_DAYS dias para não travar o login
       try {
-        final userTypeString = await SharedPreferences.getInstance()
-            .then((prefs) => prefs.getString('userType') ?? 'user');
+        final userTypeString = await SharedPreferences.getInstance().then((prefs) {
+          final storedType = prefs.getString('userType');
+          if (storedType != null && storedType.isNotEmpty) {
+            return storedType;
+          }
+          return kForcedUserType == model.UserType.business ? 'business' : 'user';
+        });
         final trialExpiresAt = DateTime.now().add(Duration(days: TRIAL_DAYS));
         _user = model.User(
           id: firebaseUser.uid,
