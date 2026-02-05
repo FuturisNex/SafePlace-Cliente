@@ -22,10 +22,25 @@ class MapboxService {
   // Obter posição atual do usuário
   static Future<geo.Position?> getCurrentPosition() async {
     try {
-      bool serviceEnabled = await geo.Geolocator.isLocationServiceEnabled();
+      final hasPermission = await ensureLocationPermission();
+      if (!hasPermission) return null;
+
+      return await geo.Geolocator.getCurrentPosition(
+        desiredAccuracy: geo.LocationAccuracy.high,
+      );
+    } catch (e) {
+      debugPrint('Erro ao obter posição: $e');
+      return null;
+    }
+  }
+
+  // Garante que a permissão de localização está concedida antes de iniciar leituras/stream.
+  static Future<bool> ensureLocationPermission() async {
+    try {
+      final serviceEnabled = await geo.Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
         debugPrint('Serviço de localização desabilitado');
-        return null;
+        return false;
       }
 
       // Usar permission_handler para pedir permissão (evita bug do Geolocator ao tratar grantResults vazios)
@@ -37,12 +52,12 @@ class MapboxService {
 
       if (status.isPermanentlyDenied) {
         debugPrint('Permissão de localização negada permanentemente');
-        return null;
+        return false;
       }
 
       if (!status.isGranted) {
         debugPrint('Permissão de localização não concedida (status: $status)');
-        return null;
+        return false;
       }
 
       // Garantir que o Geolocator também esteja sincronizado com a permissão concedida
@@ -50,24 +65,19 @@ class MapboxService {
       var geoPermission = await geo.Geolocator.checkPermission();
       if (geoPermission == geo.LocationPermission.denied) {
         geoPermission = await geo.Geolocator.requestPermission();
-        if (geoPermission == geo.LocationPermission.denied ||
-            geoPermission == geo.LocationPermission.deniedForever) {
-          debugPrint('Permissão de localização negada pelo Geolocator');
-          return null;
-        }
       }
 
-      if (geoPermission == geo.LocationPermission.deniedForever) {
-        debugPrint('Permissão de localização negada permanentemente (Geolocator)');
-        return null;
+      if (geoPermission == geo.LocationPermission.deniedForever ||
+          geoPermission == geo.LocationPermission.denied) {
+        debugPrint('Permissão de localização negada pelo Geolocator');
+        return false;
       }
 
-      return await geo.Geolocator.getCurrentPosition(
-        desiredAccuracy: geo.LocationAccuracy.high,
-      );
+      return geoPermission == geo.LocationPermission.always ||
+          geoPermission == geo.LocationPermission.whileInUse;
     } catch (e) {
-      debugPrint('Erro ao obter posição: $e');
-      return null;
+      debugPrint('Erro ao validar permissão de localização: $e');
+      return false;
     }
   }
 

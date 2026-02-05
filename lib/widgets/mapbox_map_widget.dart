@@ -38,7 +38,8 @@ class MapboxMapWidget extends StatefulWidget {
   State<MapboxMapWidget> createState() => MapboxMapWidgetState();
 }
 
-class MapboxMapWidgetState extends State<MapboxMapWidget> {
+class MapboxMapWidgetState extends State<MapboxMapWidget>
+  with WidgetsBindingObserver {
   MapboxMap? mapboxMap;
   PointAnnotationManager? pointAnnotationManager;
   CircleAnnotationManager? circleAnnotationManager;
@@ -65,6 +66,7 @@ class MapboxMapWidgetState extends State<MapboxMapWidget> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     MapboxService.initialize();
     _initLocation();
     _loadPreferredDietaryFilters();
@@ -72,26 +74,34 @@ class MapboxMapWidgetState extends State<MapboxMapWidget> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _positionStream?.cancel();
     _markerIdToEstablishment.clear();
     super.dispose();
   }
 
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _initLocation();
+    }
+  }
+
   Future<void> _initLocation() async {
+    final hasPermission = await MapboxService.ensureLocationPermission();
+    if (!hasPermission) {
+      debugPrint(
+          '⚠️ Permissão de localização não concedida, não iniciando stream contínuo');
+      return;
+    }
+
     // Primeiro, tentar obter a posição atual (isso já cuida de pedir permissão)
     await _getUserLocation();
 
     if (!mounted) return;
 
-    // Só iniciar o stream contínuo se a permissão tiver sido realmente concedida
-    final permission = await geo.Geolocator.checkPermission();
-    if (permission == geo.LocationPermission.always ||
-        permission == geo.LocationPermission.whileInUse) {
-      _startLocationUpdates();
-    } else {
-      debugPrint(
-          '⚠️ Permissão de localização não concedida, não iniciando stream contínuo');
-    }
+    // Iniciar stream contínuo após permissão confirmada
+    _startLocationUpdates();
   }
 
   @override
@@ -127,6 +137,7 @@ class MapboxMapWidgetState extends State<MapboxMapWidget> {
   }
 
   void _startLocationUpdates() {
+    if (_positionStream != null) return;
     _positionStream = geo.Geolocator.getPositionStream(
       locationSettings: const geo.LocationSettings(
         accuracy: geo.LocationAccuracy.high,
@@ -157,6 +168,11 @@ class MapboxMapWidgetState extends State<MapboxMapWidget> {
       }
     }, onError: (error) {
       debugPrint('Erro ao obter posição: $error');
+      _positionStream?.cancel();
+      _positionStream = null;
+    }, onDone: () {
+      _positionStream?.cancel();
+      _positionStream = null;
     });
   }
 
@@ -381,6 +397,26 @@ class MapboxMapWidgetState extends State<MapboxMapWidget> {
       ),
       MapAnimationOptions(duration: 1000, startDelay: 0),
     );
+  }
+
+  Future<void> _handleCenterOnUserPressed() async {
+    final hasPermission = await MapboxService.ensureLocationPermission();
+    if (!hasPermission) return;
+
+    await _getUserLocation();
+    if (!mounted) return;
+
+    if (_positionStream == null) {
+      _startLocationUpdates();
+    }
+
+    if (_isMapReady && circleAnnotationManager != null) {
+      await _updateUserMarker();
+    }
+
+    if (_userPosition != null) {
+      centerOnUser();
+    }
   }
 
   /// Handler para tap no mapa - tenta identificar qual marcador foi tocado
@@ -946,7 +982,7 @@ class MapboxMapWidgetState extends State<MapboxMapWidget> {
           child: FloatingActionButton(
             mini: true,
             backgroundColor: Colors.white,
-            onPressed: centerOnUser,
+            onPressed: _handleCenterOnUserPressed,
             child: const Icon(Icons.my_location, color: Colors.blue),
           ),
         ),

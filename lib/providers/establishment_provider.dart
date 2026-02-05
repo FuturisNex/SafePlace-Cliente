@@ -7,6 +7,7 @@ import '../models/user.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
 import '../services/geofencing_service.dart';
+import '../services/mapbox_service.dart';
 
 class EstablishmentProvider with ChangeNotifier {
   List<Establishment> _establishments = [];
@@ -106,20 +107,13 @@ class EstablishmentProvider with ChangeNotifier {
 
   Future<void> _requestLocation() async {
     try {
-      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-      if (!serviceEnabled) {
-        debugPrint('Serviço de localização desabilitado');
+      final hasPermission = await MapboxService.ensureLocationPermission();
+      if (!hasPermission) {
+        debugPrint('Permissão de localização não concedida');
         return;
       }
 
-      LocationPermission permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied ||
-          permission == LocationPermission.deniedForever) {
-        debugPrint('Permissão de localização não concedida (status: $permission)');
-        return;
-      }
-
-      _userPosition = await Geolocator.getCurrentPosition();
+      _userPosition = await MapboxService.getCurrentPosition();
     } catch (e) {
       debugPrint('Erro ao obter localização: $e');
     }
