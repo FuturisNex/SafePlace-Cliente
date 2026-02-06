@@ -106,6 +106,16 @@ class MapboxMapWidgetState extends State<MapboxMapWidget>
 
       if (!mounted) return;
 
+      if (_isMapReady && _userPosition != null) {
+        if (circleAnnotationManager != null) {
+          await _updateUserMarker();
+        }
+        if (!_hasAutoCenteredOnUser) {
+          _hasAutoCenteredOnUser = true;
+          centerOnUser();
+        }
+      }
+
       // Iniciar stream contínuo após permissão confirmada
       _startLocationUpdates();
     } finally {
@@ -186,6 +196,13 @@ class MapboxMapWidgetState extends State<MapboxMapWidget>
       debugPrint('Erro ao obter posição: $error');
       _positionStream?.cancel();
       _positionStream = null;
+      if (mounted) {
+        Future.delayed(const Duration(seconds: 2), () {
+          if (mounted && _positionStream == null) {
+            _initLocation();
+          }
+        });
+      }
     }, onDone: () {
       _positionStream?.cancel();
       _positionStream = null;

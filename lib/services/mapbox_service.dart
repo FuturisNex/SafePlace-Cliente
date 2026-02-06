@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart' as geo;
@@ -25,10 +27,18 @@ class MapboxService {
       final hasPermission = await ensureLocationPermission();
       if (!hasPermission) return null;
 
-      return await geo.Geolocator.getCurrentPosition(
-        desiredAccuracy: geo.LocationAccuracy.high,
-        timeLimit: const Duration(seconds: 8),
-      );
+      try {
+        return await geo.Geolocator.getCurrentPosition(
+          desiredAccuracy: geo.LocationAccuracy.high,
+          timeLimit: const Duration(seconds: 15),
+        );
+      } on TimeoutException catch (e) {
+        debugPrint('Timeout ao obter posição atual: $e');
+      } catch (e) {
+        debugPrint('Erro ao obter posição atual: $e');
+      }
+
+      return await geo.Geolocator.getLastKnownPosition();
     } catch (e) {
       debugPrint('Erro ao obter posição: $e');
       return null;
@@ -54,6 +64,7 @@ class MapboxService {
       final serviceEnabled = await geo.Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
         debugPrint('Serviço de localização desabilitado');
+        await geo.Geolocator.openLocationSettings();
         return false;
       }
 
@@ -66,6 +77,7 @@ class MapboxService {
 
       if (status.isPermanentlyDenied) {
         debugPrint('Permissão de localização negada permanentemente');
+        await ph.openAppSettings();
         return false;
       }
 
@@ -84,6 +96,7 @@ class MapboxService {
       if (geoPermission == geo.LocationPermission.deniedForever ||
           geoPermission == geo.LocationPermission.denied) {
         debugPrint('Permissão de localização negada pelo Geolocator');
+        await ph.openAppSettings();
         return false;
       }
 
