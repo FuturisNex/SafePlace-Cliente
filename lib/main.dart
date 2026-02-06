@@ -10,6 +10,7 @@ import 'providers/cart_provider.dart';
 import 'providers/feature_flags_provider.dart';
 import 'services/notification_service.dart';
 import 'services/mapbox_service.dart';
+import 'services/app_cache_service.dart';
 import 'theme/app_theme.dart';
 import 'screens/splash_screen.dart';
 import 'screens/login_screen.dart';
@@ -30,6 +31,8 @@ void main() async {
     debugPrint('Verifique se google-services.json está em android/app/');
     // Continuar sem Firebase se não configurado
   }
+
+  await AppCacheService.clearOnFirstLaunch();
   
   await NotificationService.initializeLocalNotifications();
 
