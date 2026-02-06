@@ -64,7 +64,6 @@ class MapboxService {
       final serviceEnabled = await geo.Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
         debugPrint('Serviço de localização desabilitado');
-        await geo.Geolocator.openLocationSettings();
         return false;
       }
 
@@ -77,7 +76,6 @@ class MapboxService {
 
       if (status.isPermanentlyDenied) {
         debugPrint('Permissão de localização negada permanentemente');
-        await ph.openAppSettings();
         return false;
       }
 
@@ -93,10 +91,13 @@ class MapboxService {
         geoPermission = await geo.Geolocator.requestPermission();
       }
 
-      if (geoPermission == geo.LocationPermission.deniedForever ||
-          geoPermission == geo.LocationPermission.denied) {
+      if (geoPermission == geo.LocationPermission.deniedForever) {
+        debugPrint('Permissão de localização negada permanentemente pelo Geolocator');
+        return false;
+      }
+
+      if (geoPermission == geo.LocationPermission.denied) {
         debugPrint('Permissão de localização negada pelo Geolocator');
-        await ph.openAppSettings();
         return false;
       }
 
