@@ -8,7 +8,7 @@
 PRODUCT_NAME = safeplate
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.safeplate.safeplate
+PRODUCT_BUNDLE_IDENTIFIER = com.safeplate.cliente
 
 // The copyright displayed in application information
 PRODUCT_COPYRIGHT = Copyright © 2026 com.safeplate. All rights reserved.
