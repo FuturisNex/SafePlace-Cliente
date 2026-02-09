@@ -248,7 +248,7 @@ class MapboxMapWidgetState extends State<MapboxMapWidget>
         final hasPermission = await MapboxService.ensureLocationPermission();
         if (hasPermission) {
           await mapboxMap.location.updateSettings(
-            const LocationComponentSettings(
+            LocationComponentSettings(
               enabled: true,
               pulsingEnabled: true,
             ),
