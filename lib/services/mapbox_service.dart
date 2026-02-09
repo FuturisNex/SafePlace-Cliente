@@ -69,9 +69,11 @@ class MapboxService {
 
       // Usar permission_handler para pedir permissão (evita bug do Geolocator ao tratar grantResults vazios)
       ph.PermissionStatus status = await ph.Permission.locationWhenInUse.status;
+      debugPrint('permission_handler status inicial: $status');
 
       if (status.isDenied || status.isRestricted) {
         status = await ph.Permission.locationWhenInUse.request();
+        debugPrint('permission_handler status apos request: $status');
       }
 
       if (status.isPermanentlyDenied) {
@@ -80,15 +82,17 @@ class MapboxService {
       }
 
       if (!status.isGranted) {
-        debugPrint('Permissão de localização não concedida (status: $status)');
-        return false;
+        debugPrint(
+            'Permissão de localização não concedida pelo permission_handler (status: $status), tentando Geolocator');
       }
 
       // Garantir que o Geolocator também esteja sincronizado com a permissão concedida
       // (evita o bug de o Geolocator continuar reportando DENIED até reiniciar o app)
       var geoPermission = await geo.Geolocator.checkPermission();
+      debugPrint('Geolocator permission inicial: $geoPermission');
       if (geoPermission == geo.LocationPermission.denied) {
         geoPermission = await geo.Geolocator.requestPermission();
+        debugPrint('Geolocator permission apos request: $geoPermission');
       }
 
       if (geoPermission == geo.LocationPermission.deniedForever) {

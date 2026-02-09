@@ -244,6 +244,23 @@ class MapboxMapWidgetState extends State<MapboxMapWidget>
     try {
       debugPrint('🗺️ Inicializando Mapbox...');
 
+      try {
+        final hasPermission = await MapboxService.ensureLocationPermission();
+        if (hasPermission) {
+          await mapboxMap.location.updateSettings(
+            const LocationComponentSettings(
+              enabled: true,
+              pulsingEnabled: true,
+            ),
+          );
+          debugPrint('✅ Location component habilitado (puck)');
+        } else {
+          debugPrint('⚠️ Sem permissão para habilitar location component');
+        }
+      } catch (e) {
+        debugPrint('⚠️ Não foi possível habilitar location component: $e');
+      }
+
       // Esconder ornamentos nativos do Mapbox (scale bar, compass, logo, attribution)
       try {
         await mapboxMap.scaleBar
@@ -307,6 +324,9 @@ class MapboxMapWidgetState extends State<MapboxMapWidget>
           _hasAutoCenteredOnUser = true;
           centerOnUser();
         }
+      } else {
+        // Tentar obter a localização novamente agora que o mapa está pronto
+        _initLocation();
       }
     } catch (e, stackTrace) {
       debugPrint('❌ Erro ao inicializar Mapbox: $e');
