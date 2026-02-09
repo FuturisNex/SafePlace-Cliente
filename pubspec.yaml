@@ -10,7 +10,6 @@ dependencies:
   flutter:
     sdk: flutter
   
-  # UI e Navegação
   cupertino_icons: ^1.0.6
   
   # Autenticação
