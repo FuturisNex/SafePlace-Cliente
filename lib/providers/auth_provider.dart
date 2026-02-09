@@ -298,6 +298,7 @@ class AuthProvider with ChangeNotifier {
       });
       
       // Tentar carregar dados do Firestore primeiro (com timeout)
+      final cachedPhone = _user?.phone;
       model.User? firestoreUser;
       try {
         firestoreUser = await FirebaseService.getUserData(firebaseUser.uid)
@@ -313,6 +314,31 @@ class AuthProvider with ChangeNotifier {
       if (firestoreUser != null) {
         // Usar dados do Firestore (incluindo Premium e gamificação)
         _user = firestoreUser;
+        if ((_user!.phone == null || _user!.phone!.trim().isEmpty) &&
+            cachedPhone != null &&
+            cachedPhone.trim().isNotEmpty) {
+          _user = model.User(
+            id: _user!.id,
+            email: _user!.email,
+            name: _user!.name,
+            type: _user!.type,
+            photoUrl: _user!.photoUrl,
+            coverPhotoUrl: _user!.coverPhotoUrl,
+            preferredLanguage: _user!.preferredLanguage,
+            phone: cachedPhone,
+            points: _user!.points,
+            seal: _user!.seal,
+            isPremium: _user!.isPremium,
+            premiumExpiresAt: _user!.premiumExpiresAt,
+            totalCheckIns: _user!.totalCheckIns,
+            totalReviews: _user!.totalReviews,
+            totalReferrals: _user!.totalReferrals,
+            followersCount: _user!.followersCount,
+            followingCount: _user!.followingCount,
+            dietaryPreferences: _user!.dietaryPreferences,
+            createdAt: _user!.createdAt,
+          );
+        }
         // Se temos preferredLanguage novo, atualizar apenas esse campo
         if (preferredLanguage != null && preferredLanguage != _user!.preferredLanguage) {
           _user = model.User(
@@ -323,6 +349,7 @@ class AuthProvider with ChangeNotifier {
             photoUrl: _user!.photoUrl,
             coverPhotoUrl: _user!.coverPhotoUrl,
             preferredLanguage: preferredLanguage,
+            phone: _user!.phone ?? cachedPhone,
             // Manter todos os dados de gamificação e engajamento do Firestore
             points: _user!.points,
             seal: _user!.seal,
