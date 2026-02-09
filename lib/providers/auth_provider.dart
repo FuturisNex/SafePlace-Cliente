@@ -1174,6 +1174,7 @@ class AuthProvider with ChangeNotifier {
         photoUrl: _user!.photoUrl,
         coverPhotoUrl: _user!.coverPhotoUrl,
         preferredLanguage: languageCode,
+        phone: _user!.phone,
         points: _user!.points,
         seal: _user!.seal,
         isPremium: _user!.isPremium,
