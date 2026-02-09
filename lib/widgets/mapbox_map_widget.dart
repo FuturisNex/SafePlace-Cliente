@@ -114,9 +114,9 @@ class MapboxMapWidgetState extends State<MapboxMapWidget>
             LocationComponentSettings(
               enabled: true,
               pulsingEnabled: true,
-              puckBearingEnabled: true,
-              puckBearing: PuckBearing.heading,
-              locationPuck: const LocationPuck2D(),
+              locationPuck: LocationPuck(
+                locationPuck2D: LocationPuck2D(),
+              ),
             ),
           );
           debugPrint('✅ Location component habilitado após permissão');
@@ -280,9 +280,9 @@ class MapboxMapWidgetState extends State<MapboxMapWidget>
             LocationComponentSettings(
               enabled: true,
               pulsingEnabled: true,
-              puckBearingEnabled: true,
-              puckBearing: PuckBearing.heading,
-              locationPuck: const LocationPuck2D(),
+              locationPuck: LocationPuck(
+                locationPuck2D: LocationPuck2D(),
+              ),
             ),
           );
           debugPrint('✅ Location component habilitado (puck)');

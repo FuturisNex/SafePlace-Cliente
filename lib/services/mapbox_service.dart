@@ -26,16 +26,16 @@ class MapboxService {
       final hasPermission = await ensureLocationPermission();
       if (!hasPermission) return null;
 
-      try {
-        return await geo.Geolocator.getCurrentPosition(
-          desiredAccuracy: geo.LocationAccuracy.high,
-          timeLimit: const Duration(seconds: 15),
-        );
-      } on TimeoutException catch (e) {
-        debugPrint('Timeout ao obter posição atual: $e');
-      } catch (e) {
-        debugPrint('Erro ao obter posição atual: $e');
-      }
+      final position = await _tryGetCurrentPosition(
+        accuracy: geo.LocationAccuracy.high,
+        timeLimit: const Duration(seconds: 30),
+      );
+      if (position != null) return position;
+
+      final fallback = await _tryGetCurrentPosition(
+        accuracy: geo.LocationAccuracy.best,
+      );
+      if (fallback != null) return fallback;
 
       return await geo.Geolocator.getLastKnownPosition();
     } catch (e) {
@@ -55,6 +55,23 @@ class MapboxService {
       debugPrint('Erro ao obter última posição conhecida: $e');
       return null;
     }
+  }
+
+  static Future<geo.Position?> _tryGetCurrentPosition({
+    required geo.LocationAccuracy accuracy,
+    Duration? timeLimit,
+  }) async {
+    try {
+      return await geo.Geolocator.getCurrentPosition(
+        desiredAccuracy: accuracy,
+        timeLimit: timeLimit,
+      );
+    } on TimeoutException catch (e) {
+      debugPrint('Timeout ao obter posição atual: $e');
+    } catch (e) {
+      debugPrint('Erro ao obter posição atual: $e');
+    }
+    return null;
   }
 
   // Garante que a permissão de localização está concedida antes de iniciar leituras/stream.
