@@ -101,6 +101,20 @@ class MapboxMapWidgetState extends State<MapboxMapWidget>
         return;
       }
 
+      if (_isMapReady && mapboxMap != null) {
+        try {
+          await mapboxMap!.location.updateSettings(
+            LocationComponentSettings(
+              enabled: true,
+              pulsingEnabled: true,
+            ),
+          );
+          debugPrint('✅ Location component habilitado após permissão');
+        } catch (e) {
+          debugPrint('⚠️ Erro ao habilitar location component: $e');
+        }
+      }
+
       // Primeiro, tentar obter a posição atual (isso já cuida de pedir permissão)
       await _getUserLocation();
 
