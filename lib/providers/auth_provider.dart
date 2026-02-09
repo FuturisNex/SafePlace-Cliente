@@ -391,7 +391,7 @@ class AuthProvider with ChangeNotifier {
         final userTypeString = await SharedPreferences.getInstance().then((prefs) {
           final storedType = prefs.getString('userType');
           if (storedType != null && storedType.isNotEmpty) {
-                  phone: _user!.phone,
+            return storedType;
           }
           return kForcedUserType == model.UserType.business ? 'business' : 'user';
         });
