@@ -66,9 +66,13 @@ class MapboxService {
         return false;
       }
 
-      // Apenas verificar permissão existente (não solicitar em tempo de execução)
-      final geoPermission = await geo.Geolocator.checkPermission();
+      var geoPermission = await geo.Geolocator.checkPermission();
       debugPrint('Geolocator permission atual: $geoPermission');
+
+      if (geoPermission == geo.LocationPermission.denied) {
+        geoPermission = await geo.Geolocator.requestPermission();
+        debugPrint('Geolocator permission apos request: $geoPermission');
+      }
 
       if (geoPermission == geo.LocationPermission.deniedForever) {
         debugPrint('Permissão de localização negada permanentemente');
@@ -76,7 +80,7 @@ class MapboxService {
       }
 
       if (geoPermission == geo.LocationPermission.denied) {
-        debugPrint('Permissão de localização negada (habilite nas configurações)');
+        debugPrint('Permissão de localização negada');
         return false;
       }
 
