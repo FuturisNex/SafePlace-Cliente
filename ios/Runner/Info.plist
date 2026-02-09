@@ -32,12 +32,6 @@
     <string>Precisamos da sua localização para mostrar estabelecimentos próximos</string>
     <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
     <string>O aplicativo utiliza a localização apenas para funcionalidades relacionadas à sua região, como exibição de estabelecimentos próximos. A localização não é rastreada continuamente em segundo plano.</string>
-    <key>NSLocationAlwaysUsageDescription</key>
-    <string>O aplicativo utiliza a localização apenas para funcionalidades relacionadas à sua região, como exibição de estabelecimentos próximos. A localização não é rastreada continuamente em segundo plano.</string>
-    <key>UIBackgroundModes</key>
-    <array>
-        <string>location</string>
-    </array>
     <key>NSPhotoLibraryAddUsageDescription</key>
     <string>Precisamos salvar fotos das avaliações</string>
     <key>NSPhotoLibraryUsageDescription</key>

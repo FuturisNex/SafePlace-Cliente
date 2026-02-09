@@ -6,7 +6,6 @@ import '../providers/auth_provider.dart';
 import '../models/user.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
-import '../services/geofencing_service.dart';
 import '../services/mapbox_service.dart';
 
 class EstablishmentProvider with ChangeNotifier {
@@ -54,7 +53,6 @@ class EstablishmentProvider with ChangeNotifier {
         _applyFilters();
         notifyListeners();
         _requestLocation();
-        unawaited(GeofencingService.updateRegions(_establishments));
       },
       onError: (error) {
         debugPrint('❌ Erro ao escutar estabelecimentos: $error');
@@ -102,7 +100,6 @@ class EstablishmentProvider with ChangeNotifier {
     _applyFilters();
     notifyListeners();
     _requestLocation();
-    unawaited(GeofencingService.updateRegions(_establishments));
   }
 
   Future<void> _requestLocation() async {

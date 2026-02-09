@@ -7,6 +7,7 @@ import '../models/establishment.dart';
 import 'notification_service.dart';
 
 class GeofencingService {
+  static const bool _enableGeofencing = false;
   static bool _isSetup = false;
   static bool _isStarted = false;
   static final Set<String> _registeredIds = <String>{};
@@ -47,6 +48,10 @@ class GeofencingService {
   }
 
   static Future<bool> requestPermissions({bool background = true}) async {
+    if (!_enableGeofencing) {
+      debugPrint('Geofencing desabilitado: não solicitando permissões');
+      return false;
+    }
     try {
       final permission = await Geofencing.instance.requestLocationPermission();
       final status = permission.toString().toLowerCase();
@@ -58,6 +63,10 @@ class GeofencingService {
   }
 
   static Future<void> updateRegions(List<Establishment> establishments) async {
+    if (!_enableGeofencing) {
+      debugPrint('Geofencing desabilitado: não registrando regiões');
+      return;
+    }
     if (establishments.isEmpty) return;
     await _ensureSetup();
     final granted = await requestPermissions(background: true);

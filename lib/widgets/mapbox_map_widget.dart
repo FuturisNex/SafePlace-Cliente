@@ -87,6 +87,13 @@ class MapboxMapWidgetState extends State<MapboxMapWidget>
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
       _initLocation();
+      return;
+    }
+
+    if (state == AppLifecycleState.inactive ||
+        state == AppLifecycleState.paused ||
+        state == AppLifecycleState.detached) {
+      _stopLocationUpdates();
     }
   }
 
@@ -221,6 +228,11 @@ class MapboxMapWidgetState extends State<MapboxMapWidget>
       _positionStream?.cancel();
       _positionStream = null;
     });
+  }
+
+  void _stopLocationUpdates() {
+    _positionStream?.cancel();
+    _positionStream = null;
   }
 
   Future<void> _loadPreferredDietaryFilters() async {

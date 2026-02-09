@@ -1,7 +1,7 @@
 name: safeplate
 description: Prato Seguro - Aplicativo para encontrar estabelecimentos com opções seguras para restrições alimentares
 publish_to: 'none'
-version: 1.4.2+41
+version: 1.4.2+43
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -28,7 +28,6 @@ dependencies:
   
   # Localização
   geolocator: ^10.1.0
-  permission_handler: ^11.1.0
   
   # Gerenciamento de Estado
   provider: ^6.1.1

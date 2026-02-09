@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart' as geo;
-import 'package:permission_handler/permission_handler.dart' as ph;
 import '../models/establishment.dart';
 
 class MapboxService {
@@ -67,41 +66,17 @@ class MapboxService {
         return false;
       }
 
-      // Usar permission_handler para pedir permissão (evita bug do Geolocator ao tratar grantResults vazios)
-      ph.PermissionStatus status = await ph.Permission.locationWhenInUse.status;
-      debugPrint('permission_handler status inicial: $status');
+      // Apenas verificar permissão existente (não solicitar em tempo de execução)
+      final geoPermission = await geo.Geolocator.checkPermission();
+      debugPrint('Geolocator permission atual: $geoPermission');
 
-      if (status.isDenied || status.isRestricted) {
-        status = await ph.Permission.locationWhenInUse.request();
-        debugPrint('permission_handler status apos request: $status');
-      }
-
-      if (status.isPermanentlyDenied) {
+      if (geoPermission == geo.LocationPermission.deniedForever) {
         debugPrint('Permissão de localização negada permanentemente');
         return false;
       }
 
-      if (!status.isGranted) {
-        debugPrint(
-            'Permissão de localização não concedida pelo permission_handler (status: $status), tentando Geolocator');
-      }
-
-      // Garantir que o Geolocator também esteja sincronizado com a permissão concedida
-      // (evita o bug de o Geolocator continuar reportando DENIED até reiniciar o app)
-      var geoPermission = await geo.Geolocator.checkPermission();
-      debugPrint('Geolocator permission inicial: $geoPermission');
       if (geoPermission == geo.LocationPermission.denied) {
-        geoPermission = await geo.Geolocator.requestPermission();
-        debugPrint('Geolocator permission apos request: $geoPermission');
-      }
-
-      if (geoPermission == geo.LocationPermission.deniedForever) {
-        debugPrint('Permissão de localização negada permanentemente pelo Geolocator');
-        return false;
-      }
-
-      if (geoPermission == geo.LocationPermission.denied) {
-        debugPrint('Permissão de localização negada pelo Geolocator');
+        debugPrint('Permissão de localização negada (habilite nas configurações)');
         return false;
       }
 
