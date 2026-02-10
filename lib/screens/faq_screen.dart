@@ -58,7 +58,7 @@ class _FaqScreenState extends State<FaqScreen> {
     ),
     _FaqItem(
       question: 'Como entrar em contato com o suporte?',
-      answer: 'Você pode entrar em contato conosco através do nosso grupo oficial no WhatsApp ou pelo email pratoseguroapp@gmail.com. Também estamos no Instagram @prato.seguro.',
+      answer: 'Você pode entrar em contato conosco através do nosso grupo oficial no WhatsApp ou pelo email suporteapp@pratoseguro.com. Também estamos no Instagram @prato.seguro.',
       icon: Icons.support_agent,
     ),
     _FaqItem(

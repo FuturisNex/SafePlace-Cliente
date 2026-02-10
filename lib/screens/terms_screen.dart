@@ -15,7 +15,7 @@ O aplicativo e o site Prato Seguro são operados por:
 Prato Seguro Tecnologia LTDA
 CNPJ: 63.630.478/0001-15
 Sede: Curitiba – PR – Brasil
-E-mail: pratoseguroapp@gmail.com
+E-mail: suporteapp@pratoseguro.com
 Telefone: (41) 99624-3262
 
 2. Aceitação dos Termos

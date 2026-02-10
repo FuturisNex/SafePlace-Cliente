@@ -1274,6 +1274,13 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     }
   }
 
+  Future<void> _abrirSite() async {
+    final uri = Uri.parse('https://pratoseguro.com/');
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
+  }
+
   Future<void> _changeProfilePhoto() async {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final user = authProvider.user;
@@ -1447,8 +1454,15 @@ Baixe o Prato Seguro!
             ListTile(
               leading: const Icon(Icons.email_outlined),
               title: const Text('Email'),
-              subtitle: const Text('pratoseguroapp@gmail.com'),
+              subtitle: const Text('suporteapp@pratoseguro.com'),
               onTap: () => _enviarEmail(),
+            ),
+            const Divider(),
+            ListTile(
+              leading: const Icon(Icons.public),
+              title: const Text('Site'),
+              subtitle: const Text('https://pratoseguro.com'),
+              onTap: () => _abrirSite(),
             ),
             const Divider(),
             ListTile(

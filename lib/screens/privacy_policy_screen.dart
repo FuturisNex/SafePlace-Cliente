@@ -45,7 +45,7 @@ O usuário pode, a qualquer momento:
   - solicitar a exclusão de dados, quando permitido por lei;
   - revogar consentimentos previamente concedidos.
 
-As solicitações devem ser feitas pelo e-mail: pratoseguroapp@gmail.com
+As solicitações devem ser feitas pelo e-mail: suporteapp@pratoseguro.com
 
 7. Cookies
 O site pode utilizar cookies para:
@@ -65,7 +65,7 @@ Recomendamos a revisão periódica deste documento.
 10. Contato
 Em caso de dúvidas sobre privacidade ou proteção de dados:
 
-E-mail: pratoseguroapp@gmail.com
+E-mail: suporteapp@pratoseguro.com
 WhatsApp: (41) 99624-3262
 ''';
 
