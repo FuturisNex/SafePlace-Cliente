@@ -41,6 +41,7 @@ class AuthProvider with ChangeNotifier {
   bool _isGoogleSignInInitialized = false;
 
   AuthProvider() {
+    debugPrint('🟢 [DEBUG] AuthProvider inicializado. kForcedUserType=$kForcedUserType');
     _checkAuthState();
   }
 
@@ -312,8 +313,28 @@ class AuthProvider with ChangeNotifier {
       
       // Usar dados do Firestore se disponíveis, senão criar novo
       if (firestoreUser != null) {
-        // Usar dados do Firestore (incluindo Premium e gamificação)
-        _user = firestoreUser;
+        // Sempre forçar o tipo do usuário para o valor de kForcedUserType
+        _user = model.User(
+          id: firestoreUser.id,
+          email: firestoreUser.email,
+          name: firestoreUser.name,
+          type: kForcedUserType,
+          photoUrl: firestoreUser.photoUrl,
+          coverPhotoUrl: firestoreUser.coverPhotoUrl,
+          preferredLanguage: firestoreUser.preferredLanguage,
+          phone: firestoreUser.phone,
+          points: firestoreUser.points,
+          seal: firestoreUser.seal,
+          isPremium: firestoreUser.isPremium,
+          premiumExpiresAt: firestoreUser.premiumExpiresAt,
+          totalCheckIns: firestoreUser.totalCheckIns,
+          totalReviews: firestoreUser.totalReviews,
+          totalReferrals: firestoreUser.totalReferrals,
+          followersCount: firestoreUser.followersCount,
+          followingCount: firestoreUser.followingCount,
+          dietaryPreferences: firestoreUser.dietaryPreferences,
+          createdAt: firestoreUser.createdAt,
+        );
         if ((_user!.phone == null || _user!.phone!.trim().isEmpty) &&
             cachedPhone != null &&
             cachedPhone.trim().isNotEmpty) {
@@ -339,7 +360,6 @@ class AuthProvider with ChangeNotifier {
             createdAt: _user!.createdAt,
           );
         }
-        // Se temos preferredLanguage novo, atualizar apenas esse campo
         if (preferredLanguage != null && preferredLanguage != _user!.preferredLanguage) {
           _user = model.User(
             id: _user!.id,
@@ -350,7 +370,6 @@ class AuthProvider with ChangeNotifier {
             coverPhotoUrl: _user!.coverPhotoUrl,
             preferredLanguage: preferredLanguage,
             phone: _user!.phone ?? cachedPhone,
-            // Manter todos os dados de gamificação e engajamento do Firestore
             points: _user!.points,
             seal: _user!.seal,
             isPremium: _user!.isPremium,
@@ -363,7 +382,6 @@ class AuthProvider with ChangeNotifier {
             dietaryPreferences: _user!.dietaryPreferences,
             createdAt: _user!.createdAt,
           );
-          // Atualizar apenas o idioma no Firestore (sem sobrescrever outros dados)
           FirebaseService.updateUserPreferredLanguage(_user!.id, preferredLanguage)
               .catchError((e) {
             debugPrint('⚠️ Erro ao atualizar idioma no Firestore: $e');
@@ -372,11 +390,13 @@ class AuthProvider with ChangeNotifier {
       } else {
         // Criar novo usuário apenas se não existir no Firestore
         final trialExpiresAt = DateTime.now().add(Duration(days: TRIAL_DAYS));
+        final forcedType = kForcedUserType == model.UserType.user ? model.UserType.user : (userTypeString == 'business' ? model.UserType.business : model.UserType.user);
+        debugPrint('🟡 [DEBUG] Criando novo usuário. id=${firebaseUser.uid}, type=$forcedType, userTypeString=$userTypeString, kForcedUserType=$kForcedUserType');
         _user = model.User(
           id: firebaseUser.uid,
           email: firebaseUser.email ?? '',
           name: firebaseUser.displayName,
-          type: userTypeString == 'business' ? model.UserType.business : model.UserType.user,
+          type: forcedType,
           photoUrl: firebaseUser.photoURL,
           coverPhotoUrl: null,
           preferredLanguage: preferredLanguage,

@@ -651,77 +651,70 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Widget> _buildScreens(AuthProvider authProvider, bool hasBoostAccess, bool deliveryEnabled, {Widget? header}) {
     final isBusinessVariant = kForcedUserType == UserType.business;
 
-    // Removido: checagem incorreta que exibia LoginScreen para usuários autenticados
-    if (authProvider.isAuthenticated) {
-      return [const BusinessDashboardScreen()]; // Exibe o dashboard para usuários autenticados
+    // NOVA LÓGICA: Se o app está em modo cliente, nunca exibir telas de empresa
+    if (!isBusinessVariant) {
+      // Cliente
+      if (authProvider.isAuthenticated) {
+        if (deliveryEnabled) {
+          return [
+            SearchScreen(key: SearchScreen.searchKey, header: header),
+            const EstablishmentListScreen(),
+            const TripsScreen(),
+            const DeliveryScreen(),
+            const FavoritesScreen(),
+            const UserProfileScreen(),
+            const AccountScreen(),
+          ];
+        } else {
+          return [
+            SearchScreen(key: SearchScreen.searchKey, header: header),
+            const EstablishmentListScreen(),
+            const TripsScreen(),
+            const FavoritesScreen(),
+            const UserProfileScreen(),
+            const AccountScreen(),
+          ];
+        }
+      } else {
+        // Não autenticado
+        if (deliveryEnabled) {
+          return [
+            SearchScreen(key: SearchScreen.searchKey, header: header),
+            const EstablishmentListScreen(),
+            const TripsScreen(),
+            const DeliveryScreen(),
+            const LoginScreen(),
+          ];
+        } else {
+          return [
+            SearchScreen(key: SearchScreen.searchKey, header: header),
+            const EstablishmentListScreen(),
+            const TripsScreen(),
+            const LoginScreen(),
+          ];
+        }
+      }
     }
 
-    if (isBusinessVariant && !authProvider.isAuthenticated) {
-      return [const LoginScreen()];
-    }
-
+    // Modo empresa (business)
     if (authProvider.isAuthenticated) {
       final user = authProvider.user;
       // Se está logado como empresa, mostrar dashboard como home
       if (user?.type == UserType.business) {
-        // Business: Dashboard, Estabelecimentos, Boost (se tiver), Conta
         final screens = <Widget>[
-          const BusinessDashboardScreen(), // Índice 0 - Dashboard empresarial (Home)
-          const BusinessEstablishmentsScreen(), // Índice 1 - Meus estabelecimentos
+          const BusinessDashboardScreen(),
+          const BusinessEstablishmentsScreen(),
         ];
-
-        // Adicionar Boost se tiver acesso
         if (hasBoostAccess) {
-          screens.add(const BoostOverviewScreen()); // Índice 2 - Impulsionamento
+          screens.add(const BoostOverviewScreen());
         }
-
-        // Conta sempre por último
         screens.add(const AccountScreen());
-
         return screens;
       }
-      // Se está logado como usuário normal
-      if (deliveryEnabled) {
-        return [
-          SearchScreen(key: SearchScreen.searchKey, header: header), // Índice 0 - Mapa
-          const EstablishmentListScreen(), // Índice 1 - Lista de Locais
-          const TripsScreen(), // Índice 2 - Viagens
-          const DeliveryScreen(), // Índice 3 - Delivery
-          const FavoritesScreen(), // Índice 4
-          const UserProfileScreen(), // Índice 5
-          const AccountScreen(), // Índice 6
-        ];
-      } else {
-        return [
-          SearchScreen(key: SearchScreen.searchKey, header: header), // Índice 0 - Mapa
-          const EstablishmentListScreen(), // Índice 1 - Lista de Locais
-          const TripsScreen(), // Índice 2 - Viagens
-          const FavoritesScreen(), // Índice 3
-          const UserProfileScreen(), // Índice 4
-          const AccountScreen(), // Índice 5
-        ];
-      }
+      // Se logado como usuário normal no app de empresa, pode customizar aqui se quiser
+      return [const BusinessDashboardScreen()];
     } else {
-      // Se não está logado
-      if (isBusinessVariant) {
-        return [const LoginScreen()];
-      }
-      if (deliveryEnabled) {
-        return [
-          SearchScreen(key: SearchScreen.searchKey, header: header), // Índice 0 - Mapa
-          const EstablishmentListScreen(), // Índice 1 - Lista de Locais
-          const TripsScreen(), // Índice 2 - Viagens
-          const DeliveryScreen(), // Índice 3 - Delivery
-          const LoginScreen(), // Índice 4
-        ];
-      } else {
-        return [
-          SearchScreen(key: SearchScreen.searchKey, header: header), // Índice 0 - Mapa
-          const EstablishmentListScreen(), // Índice 1 - Lista de Locais
-          const TripsScreen(), // Índice 2 - Viagens
-          const LoginScreen(), // Índice 3
-        ];
-      }
+      return [const LoginScreen()];
     }
   }
 
@@ -1226,33 +1219,129 @@ class _HomeScreenState extends State<HomeScreen> {
   List<BottomNavigationBarItem> _buildBottomNavItems(BuildContext context, AuthProvider authProvider, bool hasBoostAccess, bool deliveryEnabled) {
     final isBusinessVariant = kForcedUserType == UserType.business;
 
-    // Removido: checagem incorreta que exibia botão de login para usuários autenticados
-    if (authProvider.isAuthenticated) {
-      return [
-        BottomNavigationBarItem(
-          icon: const Icon(Icons.dashboard),
-          label: Translations.getText(context, 'navDashboard'),
-        ),
-        BottomNavigationBarItem(
-          icon: const Icon(Icons.settings),
-          label: Translations.getText(context, 'navSettings'),
-        ),
-      ];
+    // NOVA LÓGICA: Se o app está em modo cliente, nunca exibir navegação de empresa
+    if (!isBusinessVariant) {
+      if (authProvider.isAuthenticated) {
+        if (deliveryEnabled) {
+          return [
+            BottomNavigationBarItem(
+              icon: const Icon(Icons.map_outlined),
+              activeIcon: const Icon(Icons.map),
+              label: Translations.getText(context, 'navSearch'),
+            ),
+            const BottomNavigationBarItem(
+              icon: Icon(Icons.list_alt_outlined),
+              activeIcon: Icon(Icons.list_alt),
+              label: 'Locais',
+            ),
+            const BottomNavigationBarItem(
+              icon: Icon(Icons.luggage_outlined),
+              activeIcon: Icon(Icons.luggage),
+              label: 'Viagens',
+            ),
+            const BottomNavigationBarItem(
+              icon: Icon(Icons.delivery_dining_outlined),
+              activeIcon: Icon(Icons.delivery_dining),
+              label: 'Delivery',
+            ),
+            BottomNavigationBarItem(
+              icon: const Icon(Icons.favorite_border),
+              activeIcon: const Icon(Icons.favorite),
+              label: Translations.getText(context, 'navFavorites'),
+            ),
+            BottomNavigationBarItem(
+              icon: const Icon(Icons.person_outline),
+              activeIcon: const Icon(Icons.person),
+              label: Translations.getText(context, 'navProfile'),
+            ),
+          ];
+        } else {
+          return [
+            BottomNavigationBarItem(
+              icon: const Icon(Icons.map_outlined),
+              activeIcon: const Icon(Icons.map),
+              label: Translations.getText(context, 'navSearch'),
+            ),
+            const BottomNavigationBarItem(
+              icon: Icon(Icons.list_alt_outlined),
+              activeIcon: Icon(Icons.list_alt),
+              label: 'Locais',
+            ),
+            const BottomNavigationBarItem(
+              icon: Icon(Icons.luggage_outlined),
+              activeIcon: Icon(Icons.luggage),
+              label: 'Viagens',
+            ),
+            BottomNavigationBarItem(
+              icon: const Icon(Icons.favorite_border),
+              activeIcon: const Icon(Icons.favorite),
+              label: Translations.getText(context, 'navFavorites'),
+            ),
+            BottomNavigationBarItem(
+              icon: const Icon(Icons.person_outline),
+              activeIcon: const Icon(Icons.person),
+              label: Translations.getText(context, 'navProfile'),
+            ),
+          ];
+        }
+      } else {
+        if (deliveryEnabled) {
+          return [
+            BottomNavigationBarItem(
+              icon: const Icon(Icons.map_outlined),
+              activeIcon: const Icon(Icons.map),
+              label: Translations.getText(context, 'navSearch'),
+            ),
+            const BottomNavigationBarItem(
+              icon: Icon(Icons.list_alt_outlined),
+              activeIcon: Icon(Icons.list_alt),
+              label: 'Locais',
+            ),
+            const BottomNavigationBarItem(
+              icon: Icon(Icons.luggage_outlined),
+              activeIcon: Icon(Icons.luggage),
+              label: 'Viagens',
+            ),
+            const BottomNavigationBarItem(
+              icon: Icon(Icons.delivery_dining_outlined),
+              activeIcon: Icon(Icons.delivery_dining),
+              label: 'Delivery',
+            ),
+            BottomNavigationBarItem(
+              icon: const Icon(Icons.login),
+              label: Translations.getText(context, 'navLogin'),
+            ),
+          ];
+        } else {
+          return [
+            BottomNavigationBarItem(
+              icon: const Icon(Icons.map_outlined),
+              activeIcon: const Icon(Icons.map),
+              label: Translations.getText(context, 'navSearch'),
+            ),
+            const BottomNavigationBarItem(
+              icon: Icon(Icons.list_alt_outlined),
+              activeIcon: Icon(Icons.list_alt),
+              label: 'Locais',
+            ),
+            const BottomNavigationBarItem(
+              icon: Icon(Icons.luggage_outlined),
+              activeIcon: Icon(Icons.luggage),
+              label: 'Viagens',
+            ),
+            BottomNavigationBarItem(
+              icon: const Icon(Icons.login),
+              label: Translations.getText(context, 'navLogin'),
+            ),
+          ];
+        }
+      }
     }
 
-    if (isBusinessVariant && !authProvider.isAuthenticated) {
-      return [
-        BottomNavigationBarItem(
-          icon: const Icon(Icons.login),
-          label: Translations.getText(context, 'navLogin'),
-        ),
-      ];
-    }
-
+    // Modo empresa (business)
     if (authProvider.isAuthenticated) {
       final user = authProvider.user;
       if (user?.type == UserType.business) {
-        // Business: Dashboard (Home), Meus Estabelecimentos, Boost (se tiver), Conta/Config
         final items = <BottomNavigationBarItem>[
           const BottomNavigationBarItem(
             icon: Icon(Icons.dashboard_outlined),
@@ -1265,8 +1354,6 @@ class _HomeScreenState extends State<HomeScreen> {
             label: 'Locais',
           ),
         ];
-
-        // Adicionar Boost se tiver acesso
         if (hasBoostAccess) {
           items.add(const BottomNavigationBarItem(
             icon: Icon(Icons.rocket_launch_outlined),
@@ -1274,127 +1361,25 @@ class _HomeScreenState extends State<HomeScreen> {
             label: 'Boost',
           ));
         }
-
-        // Configurações sempre por último
         items.add(BottomNavigationBarItem(
           icon: const Icon(Icons.settings_outlined),
           activeIcon: const Icon(Icons.settings),
           label: Translations.getText(context, 'settings'),
         ));
-
         return items;
       }
-      
-      // Usuário normal logado
-      if (deliveryEnabled) {
-        return [
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.map_outlined),
-            activeIcon: const Icon(Icons.map),
-            label: Translations.getText(context, 'navSearch'),
-          ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.list_alt_outlined),
-            activeIcon: Icon(Icons.list_alt),
-            label: 'Locais',
-          ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.luggage_outlined),
-            activeIcon: Icon(Icons.luggage),
-            label: 'Viagens',
-          ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.delivery_dining_outlined),
-            activeIcon: Icon(Icons.delivery_dining),
-            label: 'Delivery',
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.favorite_border),
-            activeIcon: const Icon(Icons.favorite),
-            label: Translations.getText(context, 'navFavorites'),
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.person_outline),
-            activeIcon: const Icon(Icons.person),
-            label: Translations.getText(context, 'navProfile'),
-          ),
-        ];
-      } else {
-        return [
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.map_outlined),
-            activeIcon: const Icon(Icons.map),
-            label: Translations.getText(context, 'navSearch'),
-          ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.list_alt_outlined),
-            activeIcon: Icon(Icons.list_alt),
-            label: 'Locais',
-          ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.luggage_outlined),
-            activeIcon: Icon(Icons.luggage),
-            label: 'Viagens',
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.favorite_border),
-            activeIcon: const Icon(Icons.favorite),
-            label: Translations.getText(context, 'navFavorites'),
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.person_outline),
-            activeIcon: const Icon(Icons.person),
-            label: Translations.getText(context, 'navProfile'),
-          ),
-        ];
-      }
-    }
-    
-    // Não logado
-    if (deliveryEnabled) {
       return [
         BottomNavigationBarItem(
-          icon: const Icon(Icons.map_outlined),
-          activeIcon: const Icon(Icons.map),
-          label: Translations.getText(context, 'navSearch'),
-        ),
-        const BottomNavigationBarItem(
-          icon: Icon(Icons.list_alt_outlined),
-          activeIcon: Icon(Icons.list_alt),
-          label: 'Locais',
-        ),
-        const BottomNavigationBarItem(
-          icon: Icon(Icons.luggage_outlined),
-          activeIcon: Icon(Icons.luggage),
-          label: 'Viagens',
-        ),
-        const BottomNavigationBarItem(
-          icon: Icon(Icons.delivery_dining_outlined),
-          activeIcon: Icon(Icons.delivery_dining),
-          label: 'Delivery',
+          icon: const Icon(Icons.dashboard),
+          label: Translations.getText(context, 'navDashboard'),
         ),
         BottomNavigationBarItem(
-          icon: const Icon(Icons.login),
-          label: Translations.getText(context, 'navLogin'),
+          icon: const Icon(Icons.settings),
+          label: Translations.getText(context, 'navSettings'),
         ),
       ];
     } else {
       return [
-        BottomNavigationBarItem(
-          icon: const Icon(Icons.map_outlined),
-          activeIcon: const Icon(Icons.map),
-          label: Translations.getText(context, 'navSearch'),
-        ),
-        const BottomNavigationBarItem(
-          icon: Icon(Icons.list_alt_outlined),
-          activeIcon: Icon(Icons.list_alt),
-          label: 'Locais',
-        ),
-        const BottomNavigationBarItem(
-          icon: Icon(Icons.luggage_outlined),
-          activeIcon: Icon(Icons.luggage),
-          label: 'Viagens',
-        ),
         BottomNavigationBarItem(
           icon: const Icon(Icons.login),
           label: Translations.getText(context, 'navLogin'),

@@ -54,9 +54,7 @@ class _SplashScreenState extends State<SplashScreen> {
         prefs.getBool(OnboardingScreen.hasSeenOnboardingKey) ?? false;
     final isBusinessVariant = kForcedUserType == UserType.business;
 
-    if (authProvider.isAuthenticated && authProvider.user?.type != kForcedUserType) {
-      await authProvider.logout();
-    }
+    // Removido: não faz mais logout automático se tipo não bate, pois a navegação já está protegida no HomeScreen
 
     if (!hasSelectedLanguage) {
       Navigator.of(context).pushReplacement(

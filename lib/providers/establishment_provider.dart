@@ -17,7 +17,7 @@ class EstablishmentProvider with ChangeNotifier {
   bool _isLoading = false;
   StreamSubscription<List<Establishment>>? _establishmentsSubscription;
   
-  // Filtros avançados (Premium)
+  // Filtros avançados
   double? _minRating;
   Set<String> _selectedCategories = {};
   Set<DifficultyLevel> _selectedDifficultyLevels = {};
@@ -245,7 +245,7 @@ class EstablishmentProvider with ChangeNotifier {
         debugPrint('✅ ${establishment.name} tem todos os filtros: ${_selectedFilters.map((f) => f.toString()).join(", ")}');
       }
 
-      // Filtros avançados (Premium)
+      // Filtros avançados
       // Filtro por categoria (case-insensitive)
       if (_selectedCategories.isNotEmpty) {
         // Normalizar categoria do estabelecimento e categorias selecionadas para comparação

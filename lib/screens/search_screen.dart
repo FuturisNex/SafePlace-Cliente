@@ -773,7 +773,7 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 }
 
-// Widget para filtros avançados (Premium)
+// Widget para Filtros avançados
 class _AdvancedFiltersSheet extends StatefulWidget {
   final double maxDistance;
   final ValueChanged<double> onDistanceChanged;
