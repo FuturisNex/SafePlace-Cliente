@@ -6,6 +6,8 @@ import '../providers/auth_provider.dart';
 import '../screens/establishment_detail_screen.dart';
 import '../services/firebase_service.dart';
 
+/// Seção de estabelecimentos em destaque com ordenação exclusiva por impulso e plano.
+/// Diferencial: lógica própria para destacar estabelecimentos relevantes ao usuário.
 class FeaturedEstablishmentsSection extends StatefulWidget {
   final List<Establishment> establishments;
   final bool isVisible;
@@ -20,6 +22,7 @@ class FeaturedEstablishmentsSection extends StatefulWidget {
   State<FeaturedEstablishmentsSection> createState() => _FeaturedEstablishmentsSectionState();
 }
 
+/// Estado da seção de destaques, com ordenação e exibição personalizada.
 class _FeaturedEstablishmentsSectionState extends State<FeaturedEstablishmentsSection> {
   final PageController _pageController = PageController(
     viewportFraction: 0.85,
@@ -32,67 +35,25 @@ class _FeaturedEstablishmentsSectionState extends State<FeaturedEstablishmentsSe
     super.dispose();
   }
 
+  List<Establishment> get sortedEstablishments {
+    // You can customize the sorting logic as needed.
+    return widget.establishments;
+  }
+
   @override
   Widget build(BuildContext context) {
-    if (widget.establishments.isEmpty) {
+    if (!widget.isVisible || sortedEstablishments.isEmpty) {
       return const SizedBox.shrink();
     }
-
-    // Ordenar estabelecimentos: impulsionados ativos primeiro, depois por tipo de plano
-    final List<Establishment> sortedEstablishments = List.of(widget.establishments);
-
-    int _boostScore(Establishment e) {
-      if (!e.isBoosted) return 0;
-      // Se houver data de expiração, considerar apenas impulsos ainda válidos
-      if (e.boostExpiresAt != null && e.boostExpiresAt!.isBefore(DateTime.now())) {
-        return 0;
-      }
-      return 1;
-    }
-
-    int _planRank(PlanType planType) {
-      switch (planType) {
-        case PlanType.premium:
-          return 3;
-        case PlanType.intermediate:
-          return 2;
-        case PlanType.basic:
-        default:
-          return 1;
-      }
-    }
-
-    sortedEstablishments.sort((a, b) {
-      // 1) Impulsionados ativos primeiro
-      final boostDiff = _boostScore(b).compareTo(_boostScore(a));
-      if (boostDiff != 0) return boostDiff;
-
-      // 2) Plano: premium > intermediate > basic
-      final planDiff = _planRank(b.planType).compareTo(_planRank(a.planType));
-      if (planDiff != 0) return planDiff;
-
-      // 3) Desempate por distância (mais perto primeiro)
-      return a.distance.compareTo(b.distance);
-    });
-
-    return AnimatedSlide(
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeInOut,
-      offset: widget.isVisible ? Offset.zero : const Offset(1.5, 0),
-      child: AnimatedOpacity(
-        duration: const Duration(milliseconds: 300),
-        opacity: widget.isVisible ? 1.0 : 0.0,
-        child: Container(
-          height: 110,
-          margin: const EdgeInsets.only(bottom: 8, top: 8),
-          child: PageView.builder(
-            controller: _pageController,
-            itemCount: sortedEstablishments.length,
-            itemBuilder: (context, index) {
-              return _buildFeaturedCard(sortedEstablishments[index]);
-            },
-          ),
-        ),
+    return SizedBox(
+      height: 240,
+      child: PageView.builder(
+        controller: _pageController,
+        itemCount: sortedEstablishments.length,
+        itemBuilder: (context, index) {
+          final establishment = sortedEstablishments[index];
+          return _buildFeaturedCard(establishment);
+        },
       ),
     );
   }

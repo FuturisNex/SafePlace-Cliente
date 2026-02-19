@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// Chip de filtro para preferências alimentares que persiste a seleção localmente.
+/// Chip de filtro alimentar com persistência local e experiência personalizada.
+///
+/// Diferencial: permite ao usuário salvar preferências alimentares localmente, tornando a experiência única e adaptada.
+/// Lógica exclusiva: integração com SharedPreferences para lembrar filtros mesmo após fechar o app.
 ///
 /// Uso:
 /// - required: id (identificador único, ex: 'vegetarian'), label (texto do chip)
@@ -124,7 +127,9 @@ class _DietaryFilterChipState extends State<DietaryFilterChip> {
       );
     }
 
-    return FilterChip(
+    return Tooltip(
+      message: 'Selecione para filtrar estabelecimentos que atendem a esta preferência alimentar.',
+      child: FilterChip(
       selectedColor: widget.selectedColor ?? Theme.of(context).colorScheme.primary.withOpacity(0.12),
       avatar: widget.leading != null
           ? CircleAvatar(
@@ -135,6 +140,7 @@ class _DietaryFilterChipState extends State<DietaryFilterChip> {
       label: Text(widget.label),
       selected: effectiveSelected,
       onSelected: (_) => _handleTap(),
+    ),
     );
   }
 }

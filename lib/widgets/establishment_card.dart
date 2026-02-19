@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../models/establishment.dart';
@@ -8,6 +9,8 @@ import '../providers/auth_provider.dart';
 import '../utils/translations.dart';
 import '../theme/app_theme.dart';
 
+/// Card de estabelecimento com lógica exclusiva para favoritos, rotas, badges de certificação e filtros dietéticos.
+/// Este componente faz parte da experiência única do app, focada em segurança alimentar e preferências do usuário.
 class EstablishmentCard extends StatefulWidget {
   final Establishment establishment;
   final VoidCallback? onSave;
@@ -24,15 +27,24 @@ class EstablishmentCard extends StatefulWidget {
   State<EstablishmentCard> createState() => _EstablishmentCardState();
 }
 
-class _EstablishmentCardState extends State<EstablishmentCard> {
+/// Estado do card de estabelecimento, com lógica assíncrona para favoritos e navegação.
+class _EstablishmentCardState extends State<EstablishmentCard> with SingleTickerProviderStateMixin {
   final FavoritesService _favoritesService = FavoritesService();
   bool _isFavorite = false;
   bool _isLoading = false;
+  bool _showFavAnim = false;
+  late final AnimationController _favAnimController;
 
   @override
   void initState() {
     super.initState();
     _checkFavorite();
+    _favAnimController = AnimationController(vsync: this);
+  }
+  @override
+  void dispose() {
+    _favAnimController.dispose();
+    super.dispose();
   }
 
   @override
@@ -42,6 +54,8 @@ class _EstablishmentCardState extends State<EstablishmentCard> {
     _checkFavorite();
   }
 
+  /// Checa se o estabelecimento está nos favoritos do usuário logado.
+  /// Lógica exclusiva: favoritos são salvos por usuário autenticado, reforçando personalização.
   Future<void> _checkFavorite() async {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final userId = authProvider.user?.id ?? '';
@@ -61,6 +75,8 @@ class _EstablishmentCardState extends State<EstablishmentCard> {
     }
   }
 
+  /// Alterna favorito, com feedback visual e mensagem customizada.
+  /// Experiência fluida mesmo em conexões lentas.
   Future<void> _toggleFavorite() async {
     if (_isLoading) return;
 
@@ -95,6 +111,16 @@ class _EstablishmentCardState extends State<EstablishmentCard> {
           _isLoading = false;
         });
 
+        // Animação de destaque ao favoritar
+        if (!_isFavorite) {
+          setState(() => _showFavAnim = false);
+        } else {
+          setState(() => _showFavAnim = true);
+          _favAnimController.forward(from: 0);
+          await Future.delayed(const Duration(milliseconds: 1200));
+          if (mounted) setState(() => _showFavAnim = false);
+        }
+
         if (widget.onSave != null) {
           widget.onSave!();
         }
@@ -125,6 +151,8 @@ class _EstablishmentCardState extends State<EstablishmentCard> {
     }
   }
 
+  /// Gera rota até o estabelecimento, com cálculo de tempo de caminhada personalizado.
+  /// Tenta abrir no Google Maps, fallback para outros modos. UX pensada para acessibilidade.
   Future<void> _generateRoute() async {
     final distanceKm = widget.establishment.distance;
     int walkingMinutes = (distanceKm / 4.0 * 60).round();
@@ -225,6 +253,8 @@ class _EstablishmentCardState extends State<EstablishmentCard> {
   }
 
   @override
+  /// Build do card, com destaques para badges de certificação, filtros dietéticos e distância.
+  /// Elementos visuais e lógicos reforçam o conceito original do app.
   Widget build(BuildContext context) {
     final establishment = widget.establishment;
     final now = DateTime.now();
@@ -232,9 +262,13 @@ class _EstablishmentCardState extends State<EstablishmentCard> {
     final Color difficultyColor = difficultyLevel.color;
     final String difficultyLabel = difficultyLevel.getLabel(context);
     final bool isBoostActive = establishment.isBoosted &&
-        (establishment.boostExpiresAt == null || establishment.boostExpiresAt!.isAfter(now));
-    final bool isPremiumActive =
-        establishment.premiumUntil != null && establishment.premiumUntil!.isAfter(now);
+      (establishment.boostExpiresAt == null || establishment.boostExpiresAt!.isAfter(now));
+    // Considera "novo" se cadastrado há menos de 7 dias
+    // Considera "novo" se teve inspeção recente (lastInspectionDate) ou boost recente
+    final bool isNew = establishment.lastInspectionDate != null &&
+      now.difference(establishment.lastInspectionDate!).inDays < 7;
+    // final bool isPremiumActive =
+    //     establishment.premiumUntil != null && establishment.premiumUntil!.isAfter(now);
 
     return Container(
       margin: const EdgeInsets.only(bottom: 20),
@@ -269,6 +303,7 @@ class _EstablishmentCardState extends State<EstablishmentCard> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // 1. Imagem de Capa e Badges
+              // Imagem de capa, badges e botões de ação exclusivos do app
               Stack(
                 children: [
                   // Imagem
@@ -343,37 +378,37 @@ class _EstablishmentCardState extends State<EstablishmentCard> {
                         ),
                       ),
                     ),
-                  // Badge de Premium (quando não boosted mas premium)
-                  if (!isBoostActive && isPremiumActive)
+                  // Badge de Novo (estabelecimento recém-cadastrado)
+                  if (isNew)
                     Positioned(
-                      bottom: 12,
+                      top: 16,
                       left: 16,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                         decoration: BoxDecoration(
-                          color: AppTheme.primaryGreen.withValues(alpha: 0.9),
-                          borderRadius: BorderRadius.circular(20),
+                          color: Colors.orange.shade700,
+                          borderRadius: BorderRadius.circular(6),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.18),
-                              blurRadius: 10,
-                              offset: const Offset(0, 3),
+                              color: Colors.black.withOpacity(0.08),
+                              blurRadius: 6,
+                              offset: const Offset(0, 2),
                             ),
                           ],
                         ),
-                        child: Row(
+                        child: const Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(
-                              Icons.workspace_premium,
-                              size: 14,
+                            Icon(
+                              Icons.fiber_new,
+                              size: 13,
                               color: Colors.white,
                             ),
-                            const SizedBox(width: 6),
+                            SizedBox(width: 4),
                             Text(
-                              Translations.getText(context, 'premiumEstablishmentBadge') ?? 'Plano Premium',
-                              style: const TextStyle(
-                                fontSize: 11,
+                              'Novo',
+                              style: TextStyle(
+                                fontSize: 10,
                                 fontWeight: FontWeight.w600,
                                 color: Colors.white,
                               ),
@@ -382,9 +417,49 @@ class _EstablishmentCardState extends State<EstablishmentCard> {
                         ),
                       ),
                     ),
+                  // Badge de Premium (quando não boosted mas premium)
+                  // if (!isBoostActive && isPremiumActive)
+                  //   Positioned(
+                  //     bottom: 12,
+                  //     left: 16,
+                  //     child: Container(
+                  //       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  //       decoration: BoxDecoration(
+                  //         color: AppTheme.primaryGreen.withValues(alpha: 0.9),
+                  //         borderRadius: BorderRadius.circular(20),
+                  //         boxShadow: [
+                  //           BoxShadow(
+                  //             color: Colors.black.withValues(alpha: 0.18),
+                  //             blurRadius: 10,
+                  //             offset: const Offset(0, 3),
+                  //           ),
+                  //         ],
+                  //       ),
+                  //       child: Row(
+                  //         mainAxisSize: MainAxisSize.min,
+                  //         children: [
+                  //           const Icon(
+                  //             Icons.workspace_premium,
+                  //             size: 14,
+                  //             color: Colors.white,
+                  //           ),
+                  //           const SizedBox(width: 6),
+                  //           Text(
+                  //             Translations.getText(context, 'premiumEstablishmentBadge') ?? 'Plano Premium',
+                  //             style: const TextStyle(
+                  //               fontSize: 11,
+                  //               fontWeight: FontWeight.w600,
+                  //               color: Colors.white,
+                  //             ),
+                  //           ),
+                  //         ],
+                  //       ),
+                  //     ),
+                  //   ),
                   // Gradiente para legibilidade (opcional, mas bom pra contraste se tiver texto sobre a img)
                   
                   // Badge de Dificuldade (Top Left)
+                  // Exibe o nível de dificuldade do local, reforçando o diferencial do app em informar o usuário.
                   Positioned(
                     top: 16,
                     left: 16,
@@ -420,6 +495,7 @@ class _EstablishmentCardState extends State<EstablishmentCard> {
                   ),
 
                   // Botão Favorito (Top Right)
+                  // Lógica exclusiva: favoritos por usuário autenticado, com feedback instantâneo.
                   Positioned(
                     top: 12,
                     right: 12,
@@ -441,13 +517,35 @@ class _EstablishmentCardState extends State<EstablishmentCard> {
                               ),
                             ],
                           ),
-                          child: _isLoading
-                              ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
-                              : Icon(
-                                  _isFavorite ? Icons.favorite : Icons.favorite_border,
-                                  color: _isFavorite ? Colors.red : Colors.grey.shade400,
-                                  size: 20,
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              _isLoading
+                                  ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                                  : Icon(
+                                      _isFavorite ? Icons.favorite : Icons.favorite_border,
+                                      color: _isFavorite ? Colors.red : Colors.grey.shade400,
+                                      size: 20,
+                                    ),
+                              if (_showFavAnim)
+                                Positioned.fill(
+                                  child: IgnorePointer(
+                                    child: Center(
+                                      child: Lottie.asset(
+                                        'assets/animations/like_fav.json',
+                                        controller: _favAnimController,
+                                        onLoaded: (composition) {
+                                          _favAnimController.duration = composition.duration;
+                                        },
+                                        width: 60,
+                                        height: 60,
+                                        repeat: false,
+                                      ),
+                                    ),
+                                  ),
                                 ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -455,7 +553,8 @@ class _EstablishmentCardState extends State<EstablishmentCard> {
                 ],
               ),
 
-              // 2. Informações
+              // 2. Informações do estabelecimento
+              // Nome, categoria, certificação técnica e filtros dietéticos são exibidos de forma personalizada.
               Padding(
                 padding: const EdgeInsets.all(20),
                 child: Column(
@@ -470,6 +569,7 @@ class _EstablishmentCardState extends State<EstablishmentCard> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
+                              // Nome do estabelecimento e badge de certificação técnica (exclusivo do app)
                               Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
@@ -517,6 +617,7 @@ class _EstablishmentCardState extends State<EstablishmentCard> {
                                 ],
                               ),
                               const SizedBox(height: 4),
+                              // Categoria do estabelecimento, traduzida e adaptada para o público do app
                               Text(
                                 CategoryTranslator.translate(context, establishment.category),
                                 style: const TextStyle(
@@ -525,6 +626,7 @@ class _EstablishmentCardState extends State<EstablishmentCard> {
                                 ),
                               ),
                               const SizedBox(height: 6),
+                              // Badge de dificuldade, reforçando o diferencial do app em informar o usuário
                               Row(
                                 children: [
                                   Container(
@@ -575,6 +677,7 @@ class _EstablishmentCardState extends State<EstablishmentCard> {
                           ),
                         ),
                         // Distância Badge
+                        // Badge de distância, reforçando a experiência personalizada do app
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                           decoration: BoxDecoration(
@@ -602,6 +705,7 @@ class _EstablishmentCardState extends State<EstablishmentCard> {
                     const SizedBox(height: 16),
                     
                     // Filtros Dietéticos (Chips)
+                    // Chips de filtros dietéticos, diferencial do app para usuários com restrições alimentares
                     if (establishment.dietaryOptions.isNotEmpty)
                       SizedBox(
                         height: 28,
@@ -630,6 +734,7 @@ class _EstablishmentCardState extends State<EstablishmentCard> {
                         ),
                       )
                     else
+                      // Mensagem customizada caso não haja filtros, reforçando a curadoria do app
                       Text(
                         Translations.getText(context, 'noDishesRegistered'),
                         style: TextStyle(

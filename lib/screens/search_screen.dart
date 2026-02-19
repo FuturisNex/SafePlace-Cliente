@@ -720,46 +720,7 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   void _showAdvancedFilters(BuildContext context, EstablishmentProvider provider) {
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    final user = authProvider.user;
-    final isPremium = user?.isPremiumActive ?? false;
 
-    if (!isPremium) {
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: Row(
-            children: [
-              const Icon(Icons.star, color: AppTheme.premiumBlue),
-              const SizedBox(width: 8),
-              Text(Translations.getText(context, 'advancedFilters')),
-            ],
-          ),
-          content: Text(
-            Translations.getText(context, 'advancedFiltersPremiumDialogBody'),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text(Translations.getText(context, 'close')),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => const PremiumScreen()),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppTheme.premiumBlue,
-              ),
-              child: Text(Platform.isIOS ? 'Ativar Recursos' : Translations.getText(context, 'becomePremium')),
-            ),
-          ],
-        ),
-      );
-      return;
-    }
 
     showModalBottomSheet(
       context: context,

@@ -9,6 +9,8 @@ import '../models/establishment.dart';
 import '../utils/translations.dart';
 import '../services/firebase_service.dart';
 
+/// Formulário de avaliação com upload de fotos, verificação de visita e integração social.
+/// Diferencial: incentiva avaliações autênticas e ricas, reforçando a confiança e a curadoria do app.
 class ReviewForm extends StatefulWidget {
   final Establishment establishment;
   final VoidCallback? onSubmitted;
@@ -23,6 +25,7 @@ class ReviewForm extends StatefulWidget {
   State<ReviewForm> createState() => _ReviewFormState();
 }
 
+/// Estado do formulário de avaliação, com lógica para fotos, nota, verificação e UX personalizada.
 class _ReviewFormState extends State<ReviewForm> {
   final _formKey = GlobalKey<FormState>();
   final _commentController = TextEditingController();

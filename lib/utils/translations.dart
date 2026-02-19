@@ -849,33 +849,33 @@ class Translations {
       case 'shareAchievements':
         return languageCode == 'pt' ? 'Compartilhar conquistas' : languageCode == 'es' ? 'Compartir logros' : 'Share achievements';
       case 'premiumAccountActive':
-        return languageCode == 'pt' ? 'Conta Premium Ativa' : languageCode == 'es' ? 'Cuenta Premium Activa' : 'Premium Account Active';
+        // return languageCode == 'pt' ? 'Conta Premium Ativa' : languageCode == 'es' ? 'Cuenta Premium Activa' : 'Premium Account Active';
       case 'expiresIn':
         return languageCode == 'pt' ? 'Expira em' : languageCode == 'es' ? 'Expira en' : 'Expires in';
       case 'premiumPlanTab':
-        return languageCode == 'pt' ? 'Plano' : languageCode == 'es' ? 'Plan Premium' : 'Premium Plan';
+        // return languageCode == 'pt' ? 'Plano' : languageCode == 'es' ? 'Plan Premium' : 'Premium Plan';
       case 'premiumStatusActive':
-        return languageCode == 'pt' ? 'Status: Premium ativo' : languageCode == 'es' ? 'Estado: Premium activo' : 'Status: Premium active';
+        // return languageCode == 'pt' ? 'Status: Premium ativo' : languageCode == 'es' ? 'Estado: Premium activo' : 'Status: Premium active';
       case 'premiumStatusInactive':
-        return languageCode == 'pt' ? 'Status: Você ainda não é Premium' : languageCode == 'es' ? 'Estado: Todavía no eres Premium' : 'Status: You are not Premium yet';
+        // return languageCode == 'pt' ? 'Status: Você ainda não é Premium' : languageCode == 'es' ? 'Estado: Todavía no eres Premium' : 'Status: You are not Premium yet';
       case 'premiumTrialNote':
-        return languageCode == 'pt'
-            ? 'Durante o piloto, os primeiros 100 usuários ganham 30 dias de Premium gratuitamente ao criar a conta.'
-            : languageCode == 'es'
-                ? 'Durante el piloto, los primeros 100 usuarios reciben 30 días de Premium gratis al crear la cuenta.'
-                : 'During the pilot, the first 100 users get 30 days of Premium for free when creating their account.';
+        // return languageCode == 'pt'
+        //     ? 'Durante o piloto, os primeiros 100 usuários ganham 30 dias de Premium gratuitamente ao criar a conta.'
+        //     : languageCode == 'es'
+        //         ? 'Durante el piloto, los primeros 100 usuarios reciben 30 días de Premium gratis al crear la cuenta.'
+        //         : 'During the pilot, the first 100 users get 30 days of Premium for free when creating their account.';
       case 'premiumDaysRemaining':
-        return languageCode == 'pt'
-            ? 'dias de Premium restantes'
-            : languageCode == 'es'
-                ? 'días de Premium restantes'
-                : 'Premium days remaining';
+        // return languageCode == 'pt'
+        //     ? 'dias de Premium restantes'
+        //     : languageCode == 'es'
+        //         ? 'días de Premium restantes'
+        //         : 'Premium days remaining';
       case 'seePlanDetails':
-        return languageCode == 'pt'
-            ? 'Ver detalhes do plano'
-            : languageCode == 'es'
-                ? 'Ver detalles del plan'
-                : 'See plan details';
+        // return languageCode == 'pt'
+        //     ? 'Ver detalhes do plano'
+        //     : languageCode == 'es'
+        //         ? 'Ver detalles del plan'
+        //         : 'See plan details';
       case 'premiumTrialHomeTitle':
         return languageCode == 'pt'
             ? 'Período Premium de teste'

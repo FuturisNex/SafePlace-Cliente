@@ -651,8 +651,9 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Widget> _buildScreens(AuthProvider authProvider, bool hasBoostAccess, bool deliveryEnabled, {Widget? header}) {
     final isBusinessVariant = kForcedUserType == UserType.business;
 
-    if (authProvider.isAuthenticated && authProvider.user?.type != kForcedUserType) {
-      return [const LoginScreen()];
+    // Removido: checagem incorreta que exibia LoginScreen para usuários autenticados
+    if (authProvider.isAuthenticated) {
+      return [const BusinessDashboardScreen()]; // Exibe o dashboard para usuários autenticados
     }
 
     if (isBusinessVariant && !authProvider.isAuthenticated) {
@@ -1225,11 +1226,16 @@ class _HomeScreenState extends State<HomeScreen> {
   List<BottomNavigationBarItem> _buildBottomNavItems(BuildContext context, AuthProvider authProvider, bool hasBoostAccess, bool deliveryEnabled) {
     final isBusinessVariant = kForcedUserType == UserType.business;
 
-    if (authProvider.isAuthenticated && authProvider.user?.type != kForcedUserType) {
+    // Removido: checagem incorreta que exibia botão de login para usuários autenticados
+    if (authProvider.isAuthenticated) {
       return [
         BottomNavigationBarItem(
-          icon: const Icon(Icons.login),
-          label: Translations.getText(context, 'navLogin'),
+          icon: const Icon(Icons.dashboard),
+          label: Translations.getText(context, 'navDashboard'),
+        ),
+        BottomNavigationBarItem(
+          icon: const Icon(Icons.settings),
+          label: Translations.getText(context, 'navSettings'),
         ),
       ];
     }

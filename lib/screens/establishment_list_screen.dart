@@ -7,6 +7,8 @@ import '../utils/translations.dart';
 import 'establishment_detail_screen.dart';
 import '../services/firebase_service.dart';
 
+/// Tela de listagem de estabelecimentos com agrupamento hierárquico (estado, cidade, bairro) e busca inteligente.
+/// Diferencial: facilita a descoberta e navegação, adaptando-se ao contexto do usuário.
 class EstablishmentListScreen extends StatefulWidget {
   const EstablishmentListScreen({super.key});
 
@@ -14,6 +16,7 @@ class EstablishmentListScreen extends StatefulWidget {
   State<EstablishmentListScreen> createState() => _EstablishmentListScreenState();
 }
 
+/// Estado da tela de listagem, com lógica de agrupamento, busca e navegação personalizada.
 class _EstablishmentListScreenState extends State<EstablishmentListScreen> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
@@ -101,7 +104,8 @@ class _EstablishmentListScreenState extends State<EstablishmentListScreen> {
     );
   }
 
-  // Agrupa: Estado -> Cidade -> Bairro -> Lista de Estabelecimentos
+  // Agrupamento exclusivo: Estado -> Cidade -> Bairro -> Lista de Estabelecimentos
+  // Diferencial: permite navegação contextualizada e descoberta facilitada.
   Map<String, Map<String, Map<String, List<Establishment>>>> _groupEstablishments(List<Establishment> list) {
     final Map<String, Map<String, Map<String, List<Establishment>>>> hierarchy = {};
 

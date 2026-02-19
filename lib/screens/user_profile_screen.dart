@@ -95,22 +95,22 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                         icon: const Icon(Icons.share_outlined),
                         onPressed: () => _shareAchievements(user),
                       ),
-                      if (user.isPremiumActive)
-                        Padding(
-                          padding: const EdgeInsets.only(right: 8.0),
-                          child: Chip(
-                            label: const Text(
-                              'PREMIUM',
-                              style: TextStyle(
-                                fontSize: 10,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
-                            backgroundColor: AppTheme.premiumBlue,
-                            visualDensity: VisualDensity.compact,
-                          ),
-                        ),
+                      // if (user.isPremiumActive)
+                      //   Padding(
+                      //     padding: const EdgeInsets.only(right: 8.0),
+                      //     child: Chip(
+                      //       label: const Text(
+                      //         'PREMIUM',
+                      //         style: TextStyle(
+                      //           fontSize: 10,
+                      //           fontWeight: FontWeight.bold,
+                      //           color: Colors.white,
+                      //         ),
+                      //       ),
+                      //       backgroundColor: AppTheme.premiumBlue,
+                      //       visualDensity: VisualDensity.compact,
+                      //     ),
+                      //   ),
                     ],
                     flexibleSpace: FlexibleSpaceBar(
                       background: _buildSocialProfileHeader(user),
@@ -134,30 +134,30 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                           unselectedLabelColor: Colors.grey.shade600,
                           indicatorWeight: 3,
                           labelStyle: const TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 12),
+                            fontWeight: FontWeight.bold, fontSize: 12),
                           tabs: [
-                            Tab(
-                                child: Text(
-                                    Translations.getText(context, 'trailMap') ??
-                                        'Trilha',
-                                    textAlign: TextAlign.center)),
-                            Tab(
-                                child: Text(
-                                    Translations.getText(
-                                            context, 'achievements') ??
-                                        'Conquistas',
-                                    textAlign: TextAlign.center)),
-                            Tab(
-                                child: Text(
-                                    Translations.getText(
-                                            context, 'premiumPlanTab') ??
-                                        'Plano',
-                                    textAlign: TextAlign.center)),
-                            Tab(
-                                child: Text(
-                                    Translations.getText(context, 'settings') ??
-                                        'Ajustes',
-                                    textAlign: TextAlign.center)),
+                          Tab(
+                            child: Text(
+                              Translations.getText(context, 'trailMap') ??
+                                'Trilha',
+                              textAlign: TextAlign.center)),
+                          Tab(
+                            child: Text(
+                              Translations.getText(
+                                  context, 'achievements') ??
+                                'Conquistas',
+                              textAlign: TextAlign.center)),
+                          // Tab(
+                          //     child: Text(
+                          //         Translations.getText(
+                          //                 context, 'premiumPlanTab') ??
+                          //             'Plano',
+                          //         textAlign: TextAlign.center)),
+                          Tab(
+                            child: Text(
+                              Translations.getText(context, 'settings') ??
+                                'Ajustes',
+                              textAlign: TextAlign.center)),
                           ],
                         ),
                       ),
@@ -169,7 +169,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                 children: [
                   _buildActivitiesTab(user),
                   _buildAchievementsTab(user),
-                  _buildPlanTab(user),
+                  // _buildPlanTab(user), // Aba de plano comentada
                   _buildAboutTab(user),
                 ],
               ),

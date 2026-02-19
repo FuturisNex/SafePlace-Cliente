@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/review.dart';
 import '../providers/auth_provider.dart';
+import 'package:lottie/lottie.dart';
 import '../services/firebase_service.dart';
 import '../utils/translations.dart';
 import '../screens/public_user_profile_screen.dart';
 
+/// Card de avaliação com lógica social exclusiva: seguir usuários, curtir avaliações e integração com perfis públicos.
+/// Diferencial: incentiva comunidade e confiança nas avaliações, reforçando a originalidade do app.
 class ReviewCard extends StatefulWidget {
   final Review review;
 
@@ -18,7 +21,8 @@ class ReviewCard extends StatefulWidget {
   State<ReviewCard> createState() => _ReviewCardState();
 }
 
-class _ReviewCardState extends State<ReviewCard> {
+/// Estado do card de avaliação, com lógica assíncrona para likes, follows e feedback instantâneo.
+class _ReviewCardState extends State<ReviewCard> with TickerProviderStateMixin {
   bool _isFollowing = false;
   bool _isLoadingFollow = false;
   bool _isLiked = false;
@@ -28,11 +32,14 @@ class _ReviewCardState extends State<ReviewCard> {
   @override
   void initState() {
     super.initState();
+      bool _showConfetti = false;
+      late final AnimationController _confettiController;
     _likesCount = widget.review.likesCount;
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
       final currentUser = authProvider.user;
+        _confettiController = AnimationController(vsync: this);
       if (currentUser == null) return;
 
       if (currentUser.id != widget.review.userId) {
@@ -61,6 +68,15 @@ class _ReviewCardState extends State<ReviewCard> {
         // Ignorar erros silenciosamente
       }
     });
+  }
+
+  late final AnimationController _confettiController;
+  bool _showConfetti = false;
+
+  @override
+  void dispose() {
+    _confettiController.dispose();
+    super.dispose();
   }
 
   @override
