@@ -1061,47 +1061,6 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     );
   }
 
-  Widget _buildCouponsSection(BuildContext context, User user) {
-    return Card(
-      elevation: 0,
-      color: Colors.white,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: Colors.grey.shade200),
-      ),
-      child: ListTile(
-        contentPadding: const EdgeInsets.all(16),
-        leading: Container(
-          padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            color: Colors.orange.shade50,
-            shape: BoxShape.circle,
-          ),
-          child: Icon(Icons.local_offer, color: Colors.orange.shade700),
-        ),
-        title: Text(
-          Translations.getText(context, 'myCoupons'),
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ),
-        subtitle: FutureBuilder<List<Coupon>>(
-          future: GamificationService.getUserCoupons(user.id),
-          builder: (context, snapshot) {
-            if (!snapshot.hasData) return const Text('Carregando...');
-            final active = snapshot.data!.where((c) => c.canUse).length;
-            return Text(
-                '$active ${Translations.getText(context, 'activeCoupons')}');
-          },
-        ),
-        trailing: const Icon(Icons.chevron_right),
-        onTap: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(builder: (_) => const CouponsScreen()),
-          );
-        },
-      ),
-    );
-  }
-
   String _getInitials(String text) {
     if (text.isEmpty) return '?';
     final trimmed = text.trim();
@@ -1315,8 +1274,6 @@ Baixe o Prato Seguro!
         _buildDietPreferencesCard(user),
         const SizedBox(height: 16),
         _buildPhoneCard(context, user),
-        const SizedBox(height: 16),
-        _buildCouponsSection(context, user),
         const SizedBox(height: 16),
         _buildOfflineModeCard(context),
         const SizedBox(height: 16),

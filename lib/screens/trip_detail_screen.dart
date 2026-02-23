@@ -826,10 +826,23 @@ class _TripDetailScreenState extends State<TripDetailScreen> with SingleTickerPr
 
   void _openDirections(TripStop stop) async {
     if (stop.latitude == null || stop.longitude == null) return;
-    
-    final url = 'https://www.google.com/maps/dir/?api=1&destination=${stop.latitude},${stop.longitude}';
-    if (await canLaunchUrl(Uri.parse(url))) {
-      await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+    final lat = stop.latitude;
+    final lng = stop.longitude;
+    String url;
+    if (Theme.of(context).platform == TargetPlatform.iOS) {
+      // Apple Maps
+      url = 'http://maps.apple.com/?daddr=$lat,$lng';
+    } else {
+      // Google Maps
+      url = 'https://www.google.com/maps/dir/?api=1&destination=$lat,$lng';
+    }
+    final uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Não foi possível abrir o app de mapas.')),
+      );
     }
   }
 

@@ -243,17 +243,6 @@ class _SettingsContentState extends State<SettingsContent> {
                 trailing: const Icon(Icons.chevron_right, size: 20),
                 onTap: _abrirPreferencias,
               ),
-              /*
-              const Divider(height: 1),
-              ListTile(
-                dense: true,
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
-                leading: const Icon(Icons.local_offer_outlined, size: 20),
-                title: const Text('Meus cupons'),
-                trailing: const Icon(Icons.chevron_right, size: 20),
-                onTap: _abrirCupons,
-              ),
-              */
               const Divider(height: 1),
               ListTile(
                 dense: true,
