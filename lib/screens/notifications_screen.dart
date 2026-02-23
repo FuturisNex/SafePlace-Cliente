@@ -87,7 +87,7 @@ class NotificationsScreen extends StatelessWidget {
                   leading: Icon(
                     icon,
                     color: type == 'seal_progress'
-                        ? AppTheme.premiumBlue
+                        ? Colors.green.shade700
                         : Colors.green.shade700,
                   ),
                   title: Text(title.isNotEmpty ? title : Translations.getText(context, 'notifications')),

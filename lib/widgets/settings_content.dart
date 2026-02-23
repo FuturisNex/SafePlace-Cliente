@@ -243,6 +243,7 @@ class _SettingsContentState extends State<SettingsContent> {
                 trailing: const Icon(Icons.chevron_right, size: 20),
                 onTap: _abrirPreferencias,
               ),
+              /*
               const Divider(height: 1),
               ListTile(
                 dense: true,
@@ -252,6 +253,7 @@ class _SettingsContentState extends State<SettingsContent> {
                 trailing: const Icon(Icons.chevron_right, size: 20),
                 onTap: _abrirCupons,
               ),
+              */
               const Divider(height: 1),
               ListTile(
                 dense: true,

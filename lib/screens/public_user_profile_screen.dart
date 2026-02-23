@@ -306,7 +306,6 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
   }
 
   Widget _buildProfileHeader(BuildContext context, User user) {
-    final isPremium = user.isPremiumActive;
     final sealLabelKey = _getSealLabelKey(user.seal);
 
     return Stack(
@@ -346,7 +345,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              // Avatar com borda de selo/premium
+              // Avatar com borda de selo
               Stack(
                 alignment: Alignment.center,
                 children: [
@@ -356,13 +355,12 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       border: Border.all(
-                        color: isPremium ? AppTheme.premiumBlue : user.seal.color,
+                        color: user.seal.color,
                         width: 4,
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: (isPremium ? AppTheme.premiumBlue : user.seal.color)
-                              .withOpacity(0.3),
+                          color: user.seal.color.withOpacity(0.3),
                           blurRadius: 16,
                           spreadRadius: 2,
                         ),
@@ -386,25 +384,11 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
                           )
                         : null,
                   ),
-                  if (isPremium)
-                    Positioned(
-                      bottom: 0,
-                      right: 0,
-                      child: Container(
-                        padding: const EdgeInsets.all(6),
-                        decoration: BoxDecoration(
-                          color: AppTheme.premiumBlue,
-                          shape: BoxShape.circle,
-                          border: Border.all(color: Colors.white, width: 2),
-                        ),
-                        child: const Icon(Icons.star, color: Colors.white, size: 16),
-                      ),
-                    ),
                 ],
               ),
               const SizedBox(height: 12),
 
-              // Nome e selo premium
+              // Nome e selo
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -416,13 +400,6 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
                       color: AppTheme.textPrimary,
                     ),
                   ),
-                  const SizedBox(width: 6),
-                  if (isPremium)
-                    const Icon(
-                      Icons.verified,
-                      color: AppTheme.premiumBlue,
-                      size: 20,
-                    ),
                 ],
               ),
 

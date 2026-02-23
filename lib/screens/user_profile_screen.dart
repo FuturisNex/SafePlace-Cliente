@@ -16,7 +16,6 @@ import '../widgets/custom_notification.dart';
 import '../utils/translations.dart';
 import 'checkins_screen.dart';
 import 'coupons_screen.dart';
-import 'premium_screen.dart';
 import 'offline_mode_screen.dart';
 import 'refer_establishment_screen.dart';
 import 'register_trail_screen.dart';
@@ -181,7 +180,8 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   }
 
   Widget _buildSocialProfileHeader(User user) {
-    final isPremium = user.isPremiumActive;
+    // Removido: lógica premium
+    final isPremium = false;
     return Stack(
       children: [
         // Capa (Cover Photo)
@@ -250,13 +250,13 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                       shape: BoxShape.circle,
                       border: Border.all(
                         color:
-                            isPremium ? AppTheme.premiumBlue : user.seal.color,
+                            isPremium ? AppTheme.primaryGreen : user.seal.color,
                         width: 4,
                       ),
                       boxShadow: [
                         BoxShadow(
                           color: (isPremium
-                                  ? AppTheme.premiumBlue
+                                  ? AppTheme.primaryGreen
                                   : user.seal.color)
                               .withOpacity(0.3),
                           blurRadius: 16,
@@ -283,22 +283,6 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                           )
                         : null,
                   ),
-                  // Ícone Premium (Se tiver)
-                  if (isPremium)
-                    Positioned(
-                      bottom: 0,
-                      right: 0,
-                      child: Container(
-                        padding: const EdgeInsets.all(6),
-                        decoration: BoxDecoration(
-                          color: AppTheme.premiumBlue,
-                          shape: BoxShape.circle,
-                          border: Border.all(color: Colors.white, width: 2),
-                        ),
-                        child: const Icon(Icons.star,
-                            color: Colors.white, size: 16),
-                      ),
-                    ),
                   // Botão de Alterar Foto (Câmera)
                   Positioned(
                     bottom: 0,
@@ -338,10 +322,6 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                     ),
                   ),
                   const SizedBox(width: 6),
-                  if (isPremium)
-                    const Icon(Icons.verified,
-                        color: AppTheme.premiumBlue, size: 20),
-                  const SizedBox(width: 8),
                   GestureDetector(
                     onTap: () {
                       // Editar perfil
@@ -519,11 +499,8 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   }
 
   Widget _buildPlanTab(User user) {
-    final bool isActive = user.isPremiumActive;
-    final DateTime? expiresAt = user.premiumExpiresAt;
-    final int? daysRemaining =
-        expiresAt != null ? expiresAt.difference(DateTime.now()).inDays : null;
 
+    // Removido: lógica premium
     return ListView(
       padding: const EdgeInsets.all(24),
       children: [
@@ -534,11 +511,6 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
             style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
         ),
-        if (isActive)
-          _buildPremiumBanner(user)
-        else
-          _buildBecomePremiumButton(context),
-        const SizedBox(height: 16),
         Card(
           elevation: 0,
           color: Colors.grey.shade50,
@@ -552,9 +524,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  isActive
-                      ? Translations.getText(context, 'premiumStatusActive')
-                      : Translations.getText(context, 'premiumStatusInactive'),
+                  'Bem-vindo ao Prato Seguro!',
                   style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
@@ -562,53 +532,13 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'No momento, seu acesso aos recursos Premium está liberado por tempo indeterminado. '
-                  'Durante esse período, você pode utilizar todas as funcionalidades Premium disponíveis no aplicativo, '
-                  'sem necessidade de pagamento.\n\n'
-                  'Caso ocorram alterações nesse modelo no futuro, você será informado com antecedência, '
-                  'conforme os Termos de Uso da plataforma.',
+                  'Aproveite todos os recursos disponíveis no aplicativo! Caso ocorram alterações nesse modelo no futuro, você será informado com antecedência, conforme os Termos de Uso da plataforma.',
                   style: TextStyle(
                     fontSize: 13,
                     color: Colors.grey,
                     height: 1.4,
                   ),
                 ),
-
-                /*  
-                if (isActive && expiresAt != null && !Platform.isIOS) ...[
-                  const SizedBox(height: 8),
-                  Text(
-                    '${Translations.getText(context, 'expiresIn')} ${_formatDate(context, expiresAt)}',
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: Colors.grey.shade700,
-                    ),
-                  ),
-                  if (daysRemaining != null && daysRemaining > 0) ...[
-                    const SizedBox(height: 4),
-                    Text(
-                      '$daysRemaining ${Translations.getText(context, 'premiumDaysRemaining')}',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey.shade700,
-                      ),
-                    ),
-                  ],
-                ],
-              */
-
-              /*
-                if (!Platform.isIOS) ...[
-                  const SizedBox(height: 8),
-                  Text(
-                    Translations.getText(context, 'premiumTrialNote'),
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey.shade700,
-                    ),
-                  ),
-                ],
-              */
               ],
             ),
           ),
@@ -856,9 +786,9 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            AppTheme.premiumBlueLight,
-            AppTheme.premiumBlue,
-            AppTheme.premiumBlueDark,
+            AppTheme.secondaryGreen,
+            AppTheme.primaryGreen,
+            Colors.green,
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -866,7 +796,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: AppTheme.premiumBlueLight.withOpacity(0.5),
+            color: AppTheme.secondaryGreen.withOpacity(0.5),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -876,7 +806,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: AppTheme.premiumBlueLight,
+            color: AppTheme.secondaryGreen,
             width: 2,
           ),
         ),
@@ -914,18 +844,6 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                       ],
                     ),
                   ),
-                /*
-                  if (user.premiumExpiresAt != null) ...[
-                    const SizedBox(height: 4),
-                    Text(
-                      '${Translations.getText(context, 'expiresIn')} ${_formatDate(context, user.premiumExpiresAt!)}',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.white.withOpacity(0.9),
-                      ),
-                    ),
-                  ],
-                */
 
                 ],
               ),
@@ -946,8 +864,8 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            AppTheme.premiumBlueLight,
-            AppTheme.premiumBlueDark,
+            AppTheme.secondaryGreen,
+            Colors.green,
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -955,7 +873,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: AppTheme.premiumBlueLight.withOpacity(0.5),
+            color: AppTheme.secondaryGreen.withOpacity(0.5),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -1948,7 +1866,7 @@ Baixe o Prato Seguro!
     final prefs = user.dietaryPreferences;
 
     return Card(
-      elevation: user.isPremiumActive ? 4 : 2,
+      elevation: 2,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
         side: BorderSide(

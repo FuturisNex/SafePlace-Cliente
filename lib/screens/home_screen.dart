@@ -17,19 +17,15 @@ import '../widgets/app_logo.dart';
 import 'search_screen.dart';
 import 'login_screen.dart';
 import 'favorites_screen.dart';
-import 'business_dashboard_screen.dart';
 import 'establishment_detail_screen.dart';
 import 'user_profile_screen.dart';
 import 'leaderboard_screen.dart';
 import 'notifications_screen.dart';
 import 'user_search_screen.dart';
-import 'business_onboarding_screen.dart';
 import 'trips_screen.dart';
 import 'establishment_list_screen.dart';
-import 'business_establishments_screen.dart';
 import 'boost_overview_screen.dart';
 import 'delivery_screen.dart';
-import 'business_delivery_screen.dart';
 import '../config.dart';
 
 const String kOfficialWhatsAppGroupUrl =
@@ -49,9 +45,6 @@ enum _SeasonalVariant { none, christmas, carnival }
 class _HomeScreenState extends State<HomeScreen> {
   int get _initialIndex {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    if (kForcedUserType == UserType.business) {
-      return 0;
-    }
     return authProvider.isAuthenticated ? 0 : 1; // Busca se logado, Login se não
   }
 
@@ -107,12 +100,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  String _formatPremiumDate(DateTime date) {
-    final day = date.day.toString().padLeft(2, '0');
-    final month = date.month.toString().padLeft(2, '0');
-    final year = date.year.toString();
-    return '$day/$month/$year';
-  }
+  // Removido: função de data premium
 
   Widget _buildTopReviewersBanner(BuildContext context) {
     return Container(
@@ -177,7 +165,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final FocusNode _homeSearchFocusNode = FocusNode();
   final FocusNode _rootFocusNode = FocusNode();
   final List<String> _searchHistory = [];
-  bool _isPremiumTrialBannerDismissed = false;
+  // Removido: premium trial banner
   
   // Sugestões de busca
   OverlayEntry? _searchSuggestionsOverlay;
@@ -247,7 +235,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final appConfig = await FirebaseService.getGlobalAppConfig();
     await _maybeShowFairModal(prefs, appConfig);
     await _maybeShowWhatsAppModal(prefs, appConfig);
-    await _maybeShowBusinessOnboarding(prefs);
+    // Removido: chamada de onboarding business
   }
 
   Future<void> _showHomePromoDialog({
@@ -384,25 +372,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Future<void> _maybeShowBusinessOnboarding(SharedPreferences prefs) async {
-    if (!mounted) return;
-    final hasSeen =
-        prefs.getBool(BusinessOnboardingScreen.hasSeenBusinessOnboardingKey) ??
-            false;
-    if (hasSeen) return;
-
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    if (!authProvider.isAuthenticated ||
-        authProvider.user?.type != UserType.business) {
-      return;
-    }
-
-    await Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => const BusinessOnboardingScreen(),
-      ),
-    );
-  }
+  // Função de onboarding de business removida
 
   Future<void> _maybeShowWhatsAppModal(SharedPreferences prefs, Map<String, dynamic>? appConfig) async {
     const key = 'promo_whatsapp_modal_v2';
@@ -648,121 +618,72 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  List<Widget> _buildScreens(AuthProvider authProvider, bool hasBoostAccess, bool deliveryEnabled, {Widget? header}) {
-    final isBusinessVariant = kForcedUserType == UserType.business;
-
-    // NOVA LÓGICA: Se o app está em modo cliente, nunca exibir telas de empresa
-    if (!isBusinessVariant) {
-      // Cliente
-      if (authProvider.isAuthenticated) {
-        if (deliveryEnabled) {
-          return [
-            SearchScreen(key: SearchScreen.searchKey, header: header),
-            const EstablishmentListScreen(),
-            const TripsScreen(),
-            const DeliveryScreen(),
-            const FavoritesScreen(),
-            const UserProfileScreen(),
-            const AccountScreen(),
-          ];
-        } else {
-          return [
-            SearchScreen(key: SearchScreen.searchKey, header: header),
-            const EstablishmentListScreen(),
-            const TripsScreen(),
-            const FavoritesScreen(),
-            const UserProfileScreen(),
-            const AccountScreen(),
-          ];
-        }
-      } else {
-        // Não autenticado
-        if (deliveryEnabled) {
-          return [
-            SearchScreen(key: SearchScreen.searchKey, header: header),
-            const EstablishmentListScreen(),
-            const TripsScreen(),
-            const DeliveryScreen(),
-            const LoginScreen(),
-          ];
-        } else {
-          return [
-            SearchScreen(key: SearchScreen.searchKey, header: header),
-            const EstablishmentListScreen(),
-            const TripsScreen(),
-            const LoginScreen(),
-          ];
-        }
-      }
-    }
-
-    // Modo empresa (business)
+  List<Widget> _buildScreens(AuthProvider authProvider, bool deliveryEnabled, {Widget? header}) {
+    // Apenas telas do cliente
     if (authProvider.isAuthenticated) {
-      final user = authProvider.user;
-      // Se está logado como empresa, mostrar dashboard como home
-      if (user?.type == UserType.business) {
-        final screens = <Widget>[
-          const BusinessDashboardScreen(),
-          const BusinessEstablishmentsScreen(),
+      if (deliveryEnabled) {
+        return [
+          SearchScreen(key: SearchScreen.searchKey, header: header),
+          const EstablishmentListScreen(),
+          const TripsScreen(),
+          const DeliveryScreen(),
+          const FavoritesScreen(),
+          const UserProfileScreen(),
+          const AccountScreen(),
         ];
-        if (hasBoostAccess) {
-          screens.add(const BoostOverviewScreen());
-        }
-        screens.add(const AccountScreen());
-        return screens;
+      } else {
+        return [
+          SearchScreen(key: SearchScreen.searchKey, header: header),
+          const EstablishmentListScreen(),
+          const TripsScreen(),
+          const FavoritesScreen(),
+          const UserProfileScreen(),
+          const AccountScreen(),
+        ];
       }
-      // Se logado como usuário normal no app de empresa, pode customizar aqui se quiser
-      return [const BusinessDashboardScreen()];
     } else {
-      return [const LoginScreen()];
+      if (deliveryEnabled) {
+        return [
+          SearchScreen(key: SearchScreen.searchKey, header: header),
+          const EstablishmentListScreen(),
+          const TripsScreen(),
+          const DeliveryScreen(),
+          const LoginScreen(),
+        ];
+      } else {
+        return [
+          SearchScreen(key: SearchScreen.searchKey, header: header),
+          const EstablishmentListScreen(),
+          const TripsScreen(),
+          const LoginScreen(),
+        ];
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
-    final establishmentProvider = Provider.of<EstablishmentProvider>(context);
     final featureFlags = Provider.of<FeatureFlagsProvider>(context);
-    final currentUser = authProvider.user;
-    final bool isBusinessUser =
-        authProvider.isAuthenticated && currentUser?.type == UserType.business;
-    final bool isBusinessVariant = kForcedUserType == UserType.business;
-    final bool isPremiumUser = currentUser?.isPremiumActive ?? false;
     final bool deliveryEnabled = featureFlags.deliveryEnabled;
-    
-    // Verificar se usuário empresarial tem acesso ao recurso de impulsionamento
-    // Só mostrar ícone se tiver boostExpiresAt válido (não apenas isBoosted=true)
-    bool hasBoostAccess = false;
-    if (isBusinessUser) {
-      final now = DateTime.now();
-      hasBoostAccess = establishmentProvider.establishments.any(
-        (e) => e.isBoosted && e.boostExpiresAt != null && e.boostExpiresAt!.isAfter(now),
-      );
-    }
-
-    // Mesma lógica de cor de fundo usada como bannerColor na SearchScreen
     Color bodyBackgroundColor = AppTheme.background;
     return StreamBuilder<String?>(
       stream: FirebaseService.seasonalThemeStream(),
       builder: (context, snapshot) {
         final seasonalThemeKey = snapshot.data;
         final seasonalVariant = _getSeasonalVariant(seasonalThemeKey);
-        
-        // Cores da navbar baseadas no tema sazonal
         Color navbarColor = Colors.white;
         Color navbarSelectedColor = AppTheme.primaryGreen;
         Color navbarShadowColor = Colors.black.withValues(alpha: 0.08);
-        
         if (seasonalVariant == _SeasonalVariant.christmas) {
-          navbarColor = const Color(0xFFFFF8F0); // Branco neve
-          navbarSelectedColor = const Color(0xFFB22222); // Vermelho natalino
+          navbarColor = const Color(0xFFFFF8F0);
+          navbarSelectedColor = const Color(0xFFB22222);
           navbarShadowColor = const Color(0xFFB22222).withValues(alpha: 0.15);
         } else if (seasonalVariant == _SeasonalVariant.carnival) {
-          navbarColor = const Color(0xFFFFF0F5); // Rosa claro
-          navbarSelectedColor = const Color(0xFF8B008B); // Roxo carnaval
+          navbarColor = const Color(0xFFFFF0F5);
+          navbarSelectedColor = const Color(0xFF8B008B);
           navbarShadowColor = const Color(0xFF8B008B).withValues(alpha: 0.15);
         }
-        
         return Scaffold(
           backgroundColor: AppTheme.background,
           extendBody: true,
@@ -770,38 +691,32 @@ class _HomeScreenState extends State<HomeScreen> {
             focusNode: _rootFocusNode,
             autofocus: true,
             child: Container(
-            color: bodyBackgroundColor,
-            child: SafeArea(
-              top: false,
-              bottom: false,
-              child: Builder(
-                builder: (context) {
-                  final header = _buildHeader(context, authProvider, seasonalThemeKey);
-                  final screens = _buildScreens(authProvider, hasBoostAccess, deliveryEnabled, header: header);
-                  final currentScreenIndex = _selectedIndex.clamp(0, screens.length - 1);
-                  final currentScreen = screens[currentScreenIndex];
-
-                  // Se for a tela de busca (mapa), ela gerencia seu próprio header para ficar transparente
-                  // Assumindo que SearchScreen é sempre o índice 0 para usuários não-business
-                    final isSearchScreen =
-                      !isBusinessUser && !isBusinessVariant && currentScreenIndex == 0;
-
-                  if (isSearchScreen) {
-                    return currentScreen;
-                  }
-
-                  return Column(
-                    children: [
-                      header,
-                      Expanded(child: currentScreen),
-                    ],
-                  );
-                },
+              color: bodyBackgroundColor,
+              child: SafeArea(
+                top: false,
+                bottom: false,
+                child: Builder(
+                  builder: (context) {
+                    final header = _buildHeader(context, authProvider, seasonalThemeKey);
+                    final screens = _buildScreens(authProvider, deliveryEnabled, header: header);
+                    final currentScreenIndex = _selectedIndex.clamp(0, screens.length - 1);
+                    final currentScreen = screens[currentScreenIndex];
+                    final isSearchScreen = currentScreenIndex == 0;
+                    if (isSearchScreen) {
+                      return currentScreen;
+                    }
+                    return Column(
+                      children: [
+                        header,
+                        Expanded(child: currentScreen),
+                      ],
+                    );
+                  },
+                ),
               ),
             ),
           ),
-        ),
-        bottomNavigationBar: SafeArea(
+          bottomNavigationBar: SafeArea(
             child: Stack(
               clipBehavior: Clip.none,
               children: [
@@ -817,7 +732,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         offset: const Offset(0, 10),
                       ),
                     ],
-                    // Borda natalina
                     border: seasonalVariant == _SeasonalVariant.christmas
                         ? Border.all(color: const Color(0xFFB22222).withValues(alpha: 0.3), width: 2)
                         : null,
@@ -826,10 +740,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     borderRadius: BorderRadius.circular(32),
                     child: Consumer<LocaleProvider>(
                       builder: (context, localeProvider, _) {
-                        final items = _buildBottomNavItems(context, authProvider, hasBoostAccess, deliveryEnabled);
+                        final items = _buildBottomNavItems(context, authProvider, deliveryEnabled);
                         final maxIndex = items.length - 1;
                         final safeIndex = _selectedIndex.clamp(0, maxIndex);
-
                         return AnimatedSwitcher(
                           duration: const Duration(milliseconds: 350),
                           transitionBuilder: (child, animation) {
@@ -859,7 +772,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                 ),
-                // Decorações natalinas na navbar
                 if (seasonalVariant == _SeasonalVariant.christmas) ...[
                   const Positioned(
                     left: 30,
@@ -884,52 +796,27 @@ class _HomeScreenState extends State<HomeScreen> {
     final statusBarHeight = MediaQuery.of(context).padding.top;
     final establishmentProvider = Provider.of<EstablishmentProvider>(context, listen: false);
     final user = authProvider.user;
-
-    final bool isBusinessUser = user?.type == UserType.business;
-    final bool isBusinessVariant = kForcedUserType == UserType.business;
-    final bool isPremiumUser = user?.isPremiumActive ?? false;
     final seasonalVariant = _getSeasonalVariant(seasonalThemeKey);
-
     Color headerStartColor;
     Color headerEndColor;
-
     // Aplicar tema sazonal se ativo
     if (seasonalVariant == _SeasonalVariant.christmas) {
-      // Tema de Natal: vermelho e verde natalino
-      headerStartColor = const Color(0xFFB22222); // Vermelho escuro
-      headerEndColor = const Color(0xFF228B22); // Verde floresta
+      headerStartColor = const Color(0xFFB22222);
+      headerEndColor = const Color(0xFF228B22);
     } else if (seasonalVariant == _SeasonalVariant.carnival) {
-      // Tema de Carnaval: roxo e dourado
-      headerStartColor = const Color(0xFF8B008B); // Magenta escuro
-      headerEndColor = const Color(0xFFFFD700); // Dourado
-    } else if (isBusinessUser) {
-      headerStartColor = AppTheme.darkGreen;
-      headerEndColor = AppTheme.primaryGreen;
-    } else if (isPremiumUser) {
-      headerStartColor = AppTheme.premiumBlueLight;
-      headerEndColor = AppTheme.premiumBlueDark;
-     } else {
+      headerStartColor = const Color(0xFF8B008B);
+      headerEndColor = const Color(0xFFFFD700);
+    } else {
       headerStartColor = AppTheme.primaryGreen;
       headerEndColor = AppTheme.secondaryGreen;
     }
-
-    Color filterIconColor = AppTheme.premiumBlue;
-    Color filterBadgeIconColor = AppTheme.premiumBlue;
-
-    if (isPremiumUser) {
-      filterIconColor = Colors.white;
-      filterBadgeIconColor = const Color(0xFFFFD700);
-    }
-
-    final String appTitleText = (isBusinessVariant || isBusinessUser)
-        ? Translations.getText(context, 'appNameBusiness')
-        : Translations.getText(context, 'appName');
-
+    Color filterIconColor = AppTheme.secondaryGreen;
+    Color filterBadgeIconColor = AppTheme.secondaryGreen;
+    filterIconColor = Colors.white;
+    filterBadgeIconColor = const Color(0xFFFFD700);
+    final String appTitleText = Translations.getText(context, 'appName');
     // Header expandido apenas na "home" de busca para usuários finais.
-    // Para contas empresariais, o header é compacto (sem barra de busca/mapa).
-    final bool isExpandedHeader = (isBusinessVariant || user?.type == UserType.business)
-      ? false
-      : (authProvider.isAuthenticated ? _selectedIndex == 0 : _selectedIndex == 1);
+    final bool isExpandedHeader = authProvider.isAuthenticated ? _selectedIndex == 0 : _selectedIndex == 1;
     
     return Stack(
       children: [
@@ -999,42 +886,41 @@ class _HomeScreenState extends State<HomeScreen> {
                       ],
                     ),
                   ),
-                  if (!isBusinessVariant)
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.emoji_events, color: Color(0xFFFFD700)),
-                          onPressed: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (_) => const LeaderboardScreen(),
-                              ),
-                            );
-                          },
-                          tooltip: Translations.getText(context, 'topReviewers'),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.person_search, color: Colors.white),
-                          onPressed: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (_) => const UserSearchScreen(),
-                              ),
-                            );
-                          },
-                          tooltip: Translations.getText(context, 'userSearchTitle'),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.notifications_outlined, color: Colors.white),
-                          onPressed: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(builder: (_) => const NotificationsScreen()),
-                            );
-                          },
-                        ),
-                      ],
-                    ),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.emoji_events, color: Color(0xFFFFD700)),
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => const LeaderboardScreen(),
+                            ),
+                          );
+                        },
+                        tooltip: Translations.getText(context, 'topReviewers'),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.person_search, color: Colors.white),
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => const UserSearchScreen(),
+                            ),
+                          );
+                        },
+                        tooltip: Translations.getText(context, 'userSearchTitle'),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.notifications_outlined, color: Colors.white),
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(builder: (_) => const NotificationsScreen()),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
                 ],
               ),
               const SizedBox(height: 16),
@@ -1133,7 +1019,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     shape: BoxShape.circle,
                                   ),
                                   child: Icon(
-                                    Icons.workspace_premium,
+                                    Icons.star,
                                     color: filterBadgeIconColor,
                                     size: 14,
                                   ),
@@ -1216,175 +1102,121 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  List<BottomNavigationBarItem> _buildBottomNavItems(BuildContext context, AuthProvider authProvider, bool hasBoostAccess, bool deliveryEnabled) {
-    final isBusinessVariant = kForcedUserType == UserType.business;
-
-    // NOVA LÓGICA: Se o app está em modo cliente, nunca exibir navegação de empresa
-    if (!isBusinessVariant) {
-      if (authProvider.isAuthenticated) {
-        if (deliveryEnabled) {
-          return [
-            BottomNavigationBarItem(
-              icon: const Icon(Icons.map_outlined),
-              activeIcon: const Icon(Icons.map),
-              label: Translations.getText(context, 'navSearch'),
-            ),
-            const BottomNavigationBarItem(
-              icon: Icon(Icons.list_alt_outlined),
-              activeIcon: Icon(Icons.list_alt),
-              label: 'Locais',
-            ),
-            const BottomNavigationBarItem(
-              icon: Icon(Icons.luggage_outlined),
-              activeIcon: Icon(Icons.luggage),
-              label: 'Viagens',
-            ),
-            const BottomNavigationBarItem(
-              icon: Icon(Icons.delivery_dining_outlined),
-              activeIcon: Icon(Icons.delivery_dining),
-              label: 'Delivery',
-            ),
-            BottomNavigationBarItem(
-              icon: const Icon(Icons.favorite_border),
-              activeIcon: const Icon(Icons.favorite),
-              label: Translations.getText(context, 'navFavorites'),
-            ),
-            BottomNavigationBarItem(
-              icon: const Icon(Icons.person_outline),
-              activeIcon: const Icon(Icons.person),
-              label: Translations.getText(context, 'navProfile'),
-            ),
-          ];
-        } else {
-          return [
-            BottomNavigationBarItem(
-              icon: const Icon(Icons.map_outlined),
-              activeIcon: const Icon(Icons.map),
-              label: Translations.getText(context, 'navSearch'),
-            ),
-            const BottomNavigationBarItem(
-              icon: Icon(Icons.list_alt_outlined),
-              activeIcon: Icon(Icons.list_alt),
-              label: 'Locais',
-            ),
-            const BottomNavigationBarItem(
-              icon: Icon(Icons.luggage_outlined),
-              activeIcon: Icon(Icons.luggage),
-              label: 'Viagens',
-            ),
-            BottomNavigationBarItem(
-              icon: const Icon(Icons.favorite_border),
-              activeIcon: const Icon(Icons.favorite),
-              label: Translations.getText(context, 'navFavorites'),
-            ),
-            BottomNavigationBarItem(
-              icon: const Icon(Icons.person_outline),
-              activeIcon: const Icon(Icons.person),
-              label: Translations.getText(context, 'navProfile'),
-            ),
-          ];
-        }
-      } else {
-        if (deliveryEnabled) {
-          return [
-            BottomNavigationBarItem(
-              icon: const Icon(Icons.map_outlined),
-              activeIcon: const Icon(Icons.map),
-              label: Translations.getText(context, 'navSearch'),
-            ),
-            const BottomNavigationBarItem(
-              icon: Icon(Icons.list_alt_outlined),
-              activeIcon: Icon(Icons.list_alt),
-              label: 'Locais',
-            ),
-            const BottomNavigationBarItem(
-              icon: Icon(Icons.luggage_outlined),
-              activeIcon: Icon(Icons.luggage),
-              label: 'Viagens',
-            ),
-            const BottomNavigationBarItem(
-              icon: Icon(Icons.delivery_dining_outlined),
-              activeIcon: Icon(Icons.delivery_dining),
-              label: 'Delivery',
-            ),
-            BottomNavigationBarItem(
-              icon: const Icon(Icons.login),
-              label: Translations.getText(context, 'navLogin'),
-            ),
-          ];
-        } else {
-          return [
-            BottomNavigationBarItem(
-              icon: const Icon(Icons.map_outlined),
-              activeIcon: const Icon(Icons.map),
-              label: Translations.getText(context, 'navSearch'),
-            ),
-            const BottomNavigationBarItem(
-              icon: Icon(Icons.list_alt_outlined),
-              activeIcon: Icon(Icons.list_alt),
-              label: 'Locais',
-            ),
-            const BottomNavigationBarItem(
-              icon: Icon(Icons.luggage_outlined),
-              activeIcon: Icon(Icons.luggage),
-              label: 'Viagens',
-            ),
-            BottomNavigationBarItem(
-              icon: const Icon(Icons.login),
-              label: Translations.getText(context, 'navLogin'),
-            ),
-          ];
-        }
-      }
-    }
-
-    // Modo empresa (business)
+  List<BottomNavigationBarItem> _buildBottomNavItems(BuildContext context, AuthProvider authProvider, bool deliveryEnabled) {
     if (authProvider.isAuthenticated) {
-      final user = authProvider.user;
-      if (user?.type == UserType.business) {
-        final items = <BottomNavigationBarItem>[
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.dashboard_outlined),
-            activeIcon: Icon(Icons.dashboard),
-            label: 'Dashboard',
+      if (deliveryEnabled) {
+        return [
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.map_outlined),
+            activeIcon: const Icon(Icons.map),
+            label: Translations.getText(context, 'navSearch'),
           ),
           const BottomNavigationBarItem(
-            icon: Icon(Icons.store_outlined),
-            activeIcon: Icon(Icons.store),
+            icon: Icon(Icons.list_alt_outlined),
+            activeIcon: Icon(Icons.list_alt),
             label: 'Locais',
           ),
+          const BottomNavigationBarItem(
+            icon: Icon(Icons.luggage_outlined),
+            activeIcon: Icon(Icons.luggage),
+            label: 'Viagens',
+          ),
+          const BottomNavigationBarItem(
+            icon: Icon(Icons.delivery_dining_outlined),
+            activeIcon: Icon(Icons.delivery_dining),
+            label: 'Delivery',
+          ),
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.favorite_border),
+            activeIcon: const Icon(Icons.favorite),
+            label: Translations.getText(context, 'navFavorites'),
+          ),
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.person_outline),
+            activeIcon: const Icon(Icons.person),
+            label: Translations.getText(context, 'navProfile'),
+          ),
         ];
-        if (hasBoostAccess) {
-          items.add(const BottomNavigationBarItem(
-            icon: Icon(Icons.rocket_launch_outlined),
-            activeIcon: Icon(Icons.rocket_launch),
-            label: 'Boost',
-          ));
-        }
-        items.add(BottomNavigationBarItem(
-          icon: const Icon(Icons.settings_outlined),
-          activeIcon: const Icon(Icons.settings),
-          label: Translations.getText(context, 'settings'),
-        ));
-        return items;
+      } else {
+        return [
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.map_outlined),
+            activeIcon: const Icon(Icons.map),
+            label: Translations.getText(context, 'navSearch'),
+          ),
+          const BottomNavigationBarItem(
+            icon: Icon(Icons.list_alt_outlined),
+            activeIcon: Icon(Icons.list_alt),
+            label: 'Locais',
+          ),
+          const BottomNavigationBarItem(
+            icon: Icon(Icons.luggage_outlined),
+            activeIcon: Icon(Icons.luggage),
+            label: 'Viagens',
+          ),
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.favorite_border),
+            activeIcon: const Icon(Icons.favorite),
+            label: Translations.getText(context, 'navFavorites'),
+          ),
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.person_outline),
+            activeIcon: const Icon(Icons.person),
+            label: Translations.getText(context, 'navProfile'),
+          ),
+        ];
       }
-      return [
-        BottomNavigationBarItem(
-          icon: const Icon(Icons.dashboard),
-          label: Translations.getText(context, 'navDashboard'),
-        ),
-        BottomNavigationBarItem(
-          icon: const Icon(Icons.settings),
-          label: Translations.getText(context, 'navSettings'),
-        ),
-      ];
     } else {
-      return [
-        BottomNavigationBarItem(
-          icon: const Icon(Icons.login),
-          label: Translations.getText(context, 'navLogin'),
-        ),
-      ];
+      if (deliveryEnabled) {
+        return [
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.map_outlined),
+            activeIcon: const Icon(Icons.map),
+            label: Translations.getText(context, 'navSearch'),
+          ),
+          const BottomNavigationBarItem(
+            icon: Icon(Icons.list_alt_outlined),
+            activeIcon: Icon(Icons.list_alt),
+            label: 'Locais',
+          ),
+          const BottomNavigationBarItem(
+            icon: Icon(Icons.luggage_outlined),
+            activeIcon: Icon(Icons.luggage),
+            label: 'Viagens',
+          ),
+          const BottomNavigationBarItem(
+            icon: Icon(Icons.delivery_dining_outlined),
+            activeIcon: Icon(Icons.delivery_dining),
+            label: 'Delivery',
+          ),
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.login),
+            label: Translations.getText(context, 'navLogin'),
+          ),
+        ];
+      } else {
+        return [
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.map_outlined),
+            activeIcon: const Icon(Icons.map),
+            label: Translations.getText(context, 'navSearch'),
+          ),
+          const BottomNavigationBarItem(
+            icon: Icon(Icons.list_alt_outlined),
+            activeIcon: Icon(Icons.list_alt),
+            label: 'Locais',
+          ),
+          const BottomNavigationBarItem(
+            icon: Icon(Icons.luggage_outlined),
+            activeIcon: Icon(Icons.luggage),
+            label: 'Viagens',
+          ),
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.login),
+            label: Translations.getText(context, 'navLogin'),
+          ),
+        ];
+      }
     }
   }
 
@@ -1786,20 +1618,14 @@ class ProfileScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: user.type == UserType.business
-                      ? Colors.blue.shade50
-                      : Colors.green.shade50,
+                  color: Colors.green.shade50,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Row(
                   children: [
                     Icon(
-                      user.type == UserType.business
-                          ? Icons.business
-                          : Icons.person,
-                      color: user.type == UserType.business
-                          ? Colors.blue
-                          : Colors.green,
+                      Icons.person,
+                      color: Colors.green,
                     ),
                   ],
                 ),
@@ -1972,16 +1798,12 @@ class AccountScreen extends StatelessWidget {
               ],
               ListTile(
                 leading: Icon(
-                  user.type == UserType.business
-                      ? Icons.business
-                      : Icons.person,
+                  Icons.person,
                   color: Colors.grey,
                 ),
                 title: Text(Translations.getText(context, 'accountType')),
                 subtitle: Text(
-                  user.type == UserType.business
-                      ? Translations.getText(context, 'business')
-                      : Translations.getText(context, 'user'),
+                  Translations.getText(context, 'user'),
                 ),
               ),
               const Divider(),

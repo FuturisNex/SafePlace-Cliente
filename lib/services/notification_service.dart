@@ -15,17 +15,14 @@ class NotificationService {
   static bool _localInitialized = false;
   static String? _currentUserId;
 
-  /// Envia notificação para usuários Premium sobre novo estabelecimento certificado
+  /// Envia notificação para todos os usuários sobre novo estabelecimento certificado
   static Future<void> notifyNewCertifiedEstablishment(Establishment establishment) async {
     try {
-      // Buscar todos os usuários Premium
-      final premiumUsers = await _firestore
-          .collection('users')
-          .where('isPremium', isEqualTo: true)
-          .get();
+      // Buscar todos os usuários
+      final users = await _firestore.collection('users').get();
 
-      // Criar notificação para cada usuário Premium
-      for (final userDoc in premiumUsers.docs) {
+      // Criar notificação para cada usuário
+      for (final userDoc in users.docs) {
         await _firestore.collection('notifications').add({
           'userId': userDoc.id,
           'type': 'new_certified_establishment',
@@ -38,7 +35,7 @@ class NotificationService {
         });
       }
 
-      debugPrint('✅ Notificações enviadas para ${premiumUsers.docs.length} usuários Premium');
+      debugPrint('✅ Notificações enviadas para ${users.docs.length} usuários');
     } catch (e) {
       debugPrint('❌ Erro ao enviar notificações: $e');
     }

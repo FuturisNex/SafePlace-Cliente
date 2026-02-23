@@ -105,30 +105,6 @@ class Translations {
         return languageCode == 'pt' ? 'Filtros Avançados' : languageCode == 'es' ? 'Filtros Avanzados' : 'Advanced Filters';
       case 'maxDistance':
         return languageCode == 'pt' ? 'Distância Máxima' : languageCode == 'es' ? 'Distancia Máxima' : 'Max Distance';
-      case 'advancedFiltersPremiumDialogBody':
-        return languageCode == 'pt'
-            ? 'Os filtros avançados são exclusivos para usuários Premium.\n\n'
-                'Torne-se Premium para acessar filtros por:\n'
-                '• Tipo de restrição alimentar\n'
-                '• Tipo de estabelecimento\n'
-                '• Nível de selo (popular, intermediário, técnico)\n'
-                '• Distância máxima\n'
-                '• Avaliação mínima'
-            : languageCode == 'es'
-                ? 'Los filtros avanzados son exclusivos para usuarios Premium.\n\n'
-                    'Hazte Premium para acceder a filtros por:\n'
-                    '• Tipo de restricción alimentaria\n'
-                    '• Tipo de establecimiento\n'
-                    '• Nivel de sello (popular, intermedio, técnico)\n'
-                    '• Distancia máxima\n'
-                    '• Calificación mínima'
-                : 'Advanced filters are exclusive to Premium users.\n\n'
-                    'Become Premium to filter by:\n'
-                    '• Dietary restriction type\n'
-                    '• Establishment type\n'
-                    '• Seal level (popular, intermediate, technical)\n'
-                    '• Max distance\n'
-                    '• Minimum rating';
       case 'minRating':
         return languageCode == 'pt' ? 'Avaliação Mínima' : languageCode == 'es' ? 'Calificación Mínima' : 'Minimum Rating';
       case 'any':
@@ -848,54 +824,14 @@ class Translations {
         return languageCode == 'pt' ? 'Apenas usuários podem acessar este perfil' : languageCode == 'es' ? 'Solo los usuarios pueden acceder a este perfil' : 'Only users can access this profile';
       case 'shareAchievements':
         return languageCode == 'pt' ? 'Compartilhar conquistas' : languageCode == 'es' ? 'Compartir logros' : 'Share achievements';
-      case 'premiumAccountActive':
-        // return languageCode == 'pt' ? 'Conta Premium Ativa' : languageCode == 'es' ? 'Cuenta Premium Activa' : 'Premium Account Active';
       case 'expiresIn':
         return languageCode == 'pt' ? 'Expira em' : languageCode == 'es' ? 'Expira en' : 'Expires in';
-      case 'premiumPlanTab':
-        // return languageCode == 'pt' ? 'Plano' : languageCode == 'es' ? 'Plan Premium' : 'Premium Plan';
-      case 'premiumStatusActive':
-        // return languageCode == 'pt' ? 'Status: Premium ativo' : languageCode == 'es' ? 'Estado: Premium activo' : 'Status: Premium active';
-      case 'premiumStatusInactive':
-        // return languageCode == 'pt' ? 'Status: Você ainda não é Premium' : languageCode == 'es' ? 'Estado: Todavía no eres Premium' : 'Status: You are not Premium yet';
-      case 'premiumTrialNote':
-        // return languageCode == 'pt'
-        //     ? 'Durante o piloto, os primeiros 100 usuários ganham 30 dias de Premium gratuitamente ao criar a conta.'
-        //     : languageCode == 'es'
-        //         ? 'Durante el piloto, los primeros 100 usuarios reciben 30 días de Premium gratis al crear la cuenta.'
-        //         : 'During the pilot, the first 100 users get 30 days of Premium for free when creating their account.';
-      case 'premiumDaysRemaining':
-        // return languageCode == 'pt'
-        //     ? 'dias de Premium restantes'
-        //     : languageCode == 'es'
-        //         ? 'días de Premium restantes'
-        //         : 'Premium days remaining';
       case 'seePlanDetails':
         // return languageCode == 'pt'
         //     ? 'Ver detalhes do plano'
         //     : languageCode == 'es'
         //         ? 'Ver detalles del plan'
         //         : 'See plan details';
-      case 'premiumTrialHomeTitle':
-        return languageCode == 'pt'
-            ? 'Período Premium de teste'
-            : languageCode == 'es'
-                ? 'Periodo de prueba Premium'
-                : 'Premium trial period';
-      case 'premiumTrialHomeDescription':
-        return languageCode == 'pt'
-            ? 'Você está com acesso Premium liberado. Durante o piloto, os primeiros 100 usuários ganham 30 dias gratuitos.'
-            : languageCode == 'es'
-                ? 'Tienes acceso Premium activado. Durante el piloto, los primeros 100 usuarios reciben 30 días gratuitos.'
-                : 'Your Premium access is active. During the pilot, the first 100 users get 30 days for free.';
-      case 'becomePremium':
-        return languageCode == 'pt' ? 'Torne-se Premium' : languageCode == 'es' ? 'Conviértete en Premium' : 'Become Premium';
-      case 'premiumBenefits':
-        return languageCode == 'pt' ? 'Acesso antecipado, filtros avançados e muito mais!' : languageCode == 'es' ? '¡Acceso anticipado, filtros avanzados y mucho más!' : 'Early access, advanced filters and much more!';
-      case 'becomePremiumInfo':
-        return languageCode == 'pt' ? 'Para tornar-se Premium, entre em contato com o suporte ou use o painel administrativo.' : languageCode == 'es' ? 'Para convertirte en Premium, contacta con soporte o usa el panel administrativo.' : 'To become Premium, contact support or use the admin panel.';
-      case 'premium':
-        return languageCode == 'pt' ? 'Premium' : languageCode == 'es' ? 'Premium' : 'Premium';
       case 'seal':
         return languageCode == 'pt' ? 'Selo' : languageCode == 'es' ? 'Sello' : 'Seal';
       case 'userSealBronzeLabel':
@@ -912,8 +848,6 @@ class Translations {
         return languageCode == 'pt' ? 'Embaixador Prato Seguro' : languageCode == 'es' ? 'Embajador Prato Seguro' : 'Prato Seguro Ambassador';
       case 'points':
         return languageCode == 'pt' ? 'Pontos' : languageCode == 'es' ? 'Puntos' : 'Points';
-      case 'pointsToRedeemPremium':
-        return languageCode == 'pt' ? 'pontos para resgatar 1 mês Premium' : languageCode == 'es' ? 'puntos para canjear 1 mes Premium' : 'points to redeem 1 month Premium';
       case 'quickActions':
         return languageCode == 'pt' ? 'Ações Rápidas' : languageCode == 'es' ? 'Acciones Rápidas' : 'Quick Actions';
       case 'history':

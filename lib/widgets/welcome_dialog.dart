@@ -100,7 +100,7 @@ class _WelcomeDialogState extends State<WelcomeDialog>
   }
 
   void _nextPage() {
-    if (_currentPage < 2) {
+    if (_currentPage < 3) {
       _pageController.nextPage(
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
@@ -204,6 +204,7 @@ class _WelcomeDialogState extends State<WelcomeDialog>
                       });
                     },
                     children: [
+                      _buildIntroPage(),
                       _buildPage1(),
                       _buildPage2(),
                       _buildPage3(),
@@ -216,7 +217,7 @@ class _WelcomeDialogState extends State<WelcomeDialog>
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: List.generate(3, (index) {
+                    children: List.generate(4, (index) {
                       return AnimatedContainer(
                         duration: const Duration(milliseconds: 200),
                         margin: const EdgeInsets.symmetric(horizontal: 4),
@@ -265,7 +266,7 @@ class _WelcomeDialogState extends State<WelcomeDialog>
                           elevation: 2,
                         ),
                         child: Text(
-                          _currentPage < 2 ? 'Próximo' : 'Começar!',
+                          _currentPage < 3 ? 'Próximo' : 'Começar!',
                           style: const TextStyle(
                             fontWeight: FontWeight.w600,
                             fontSize: 15,
@@ -279,6 +280,42 @@ class _WelcomeDialogState extends State<WelcomeDialog>
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildIntroPage() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.verified_user_rounded,
+            size: 48,
+            color: AppTheme.primaryGreen,
+          ),
+          const SizedBox(height: 16),
+          const Text(
+            'O que é o Prato Seguro?',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: Colors.black87,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 12),
+          Text(
+            'O Prato Seguro é um aplicativo colaborativo que ajuda pessoas com restrições alimentares a encontrar restaurantes, cafeterias e outros locais que oferecem opções seguras e confiáveis. Você pode buscar estabelecimentos, ver avaliações de outros usuários, indicar novos locais e compartilhar sua experiência para ajudar toda a comunidade a comer com mais tranquilidade.',
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.grey,
+              height: 1.5,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
       ),
     );
   }

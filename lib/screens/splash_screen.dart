@@ -153,15 +153,6 @@ class _SplashScreenState extends State<SplashScreen> {
               ),
             ),
             const SizedBox(height: 8),
-            Text(
-              Translations.getText(context, 'appSlogan'),
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey.withOpacity(0.7),
-              ),
-            ),
-            const SizedBox(height: 8),
             const SizedBox(height: 40),
             const CircularProgressIndicator(
               color: Colors.green,

@@ -13,15 +13,12 @@ import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import '../models/user.dart' as model;
 import '../models/user_seal.dart';
-import '../models/business_plan.dart';
 import '../services/firebase_service.dart';
 import '../services/notification_service.dart';
 import '../config.dart';
 
 class AuthProvider with ChangeNotifier {
   model.User? _user;
-  BusinessPlanSubscription? _currentBusinessPlan;
-  StreamSubscription<BusinessPlanSubscription?>? _businessPlanSubscription;
   UserCredential? _firebaseUser;
   bool _isLoading = false;
   String? _errorMessage;
@@ -29,7 +26,6 @@ class AuthProvider with ChangeNotifier {
   Completer<void>? _initCompleter;
 
   model.User? get user => _user;
-  BusinessPlanSubscription? get currentBusinessPlan => _currentBusinessPlan;
   bool get isAuthenticated => _user != null;
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
@@ -89,8 +85,6 @@ class AuthProvider with ChangeNotifier {
         phone: _user!.phone,
         points: _user!.points,
         seal: _user!.seal,
-        isPremium: _user!.isPremium,
-        premiumExpiresAt: _user!.premiumExpiresAt,
         totalCheckIns: _user!.totalCheckIns,
         totalReviews: _user!.totalReviews,
         totalReferrals: _user!.totalReferrals,
@@ -126,8 +120,6 @@ class AuthProvider with ChangeNotifier {
         phone: _user!.phone,
         points: _user!.points,
         seal: _user!.seal,
-        isPremium: _user!.isPremium,
-        premiumExpiresAt: _user!.premiumExpiresAt,
         totalCheckIns: _user!.totalCheckIns,
         totalReviews: _user!.totalReviews,
         totalReferrals: _user!.totalReferrals,
@@ -163,8 +155,6 @@ class AuthProvider with ChangeNotifier {
         phone: phone,
         points: _user!.points,
         seal: _user!.seal,
-        isPremium: _user!.isPremium,
-        premiumExpiresAt: _user!.premiumExpiresAt,
         totalCheckIns: _user!.totalCheckIns,
         totalReviews: _user!.totalReviews,
         totalReferrals: _user!.totalReferrals,
@@ -209,7 +199,6 @@ class AuthProvider with ChangeNotifier {
         });
         // Aplicar idioma preferido após carregar usuário
         _applyPreferredLanguage();
-        _startBusinessPlanListenerIfNeeded();
       } else {
         debugPrint('🔐 Firebase Auth: nenhum usuário autenticado, tentando carregar do cache local');
         await _loadUser();
@@ -238,49 +227,13 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
-  void _startBusinessPlanListenerIfNeeded() {
-    _businessPlanSubscription?.cancel();
-
-    if (_user == null || _user!.type != model.UserType.business) {
-      _currentBusinessPlan = null;
-      return;
-    }
-
-    try {
-      final ownerId = _user!.id;
-      _businessPlanSubscription = FirebaseService
-          .businessPlanStreamForUser(ownerId)
-          .listen((plan) async {
-            _currentBusinessPlan = plan;
-            notifyListeners();
-            try {
-              await FirebaseService.applyBusinessPlanToEstablishments(ownerId, plan);
-            } catch (e) {
-              debugPrint('⚠️ Erro ao aplicar plano business nos estabelecimentos: $e');
-            }
-          }, onError: (e) {
-            debugPrint('⚠️ Erro na stream de plano business: $e');
-          });
-    } catch (e) {
-      debugPrint('⚠️ Erro ao iniciar listener de plano business: $e');
-    }
-  }
-
-  void _disposeBusinessPlanListener() {
-    try {
-      _businessPlanSubscription?.cancel();
-    } catch (_) {}
-    _businessPlanSubscription = null;
-    _currentBusinessPlan = null;
-  }
-
   Future<void> _loadUser() async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final userJson = prefs.getString('user');
       if (userJson != null) {
         _user = model.User.fromJson(json.decode(userJson));
-        _startBusinessPlanListenerIfNeeded();
+        // Removido: plano de negócio
         notifyListeners();
       }
     } catch (e) {
@@ -325,8 +278,6 @@ class AuthProvider with ChangeNotifier {
           phone: firestoreUser.phone,
           points: firestoreUser.points,
           seal: firestoreUser.seal,
-          isPremium: firestoreUser.isPremium,
-          premiumExpiresAt: firestoreUser.premiumExpiresAt,
           totalCheckIns: firestoreUser.totalCheckIns,
           totalReviews: firestoreUser.totalReviews,
           totalReferrals: firestoreUser.totalReferrals,
@@ -349,8 +300,6 @@ class AuthProvider with ChangeNotifier {
             phone: cachedPhone,
             points: _user!.points,
             seal: _user!.seal,
-            isPremium: _user!.isPremium,
-            premiumExpiresAt: _user!.premiumExpiresAt,
             totalCheckIns: _user!.totalCheckIns,
             totalReviews: _user!.totalReviews,
             totalReferrals: _user!.totalReferrals,
@@ -372,8 +321,6 @@ class AuthProvider with ChangeNotifier {
             phone: _user!.phone ?? cachedPhone,
             points: _user!.points,
             seal: _user!.seal,
-            isPremium: _user!.isPremium,
-            premiumExpiresAt: _user!.premiumExpiresAt,
             totalCheckIns: _user!.totalCheckIns,
             totalReviews: _user!.totalReviews,
             totalReferrals: _user!.totalReferrals,
@@ -403,8 +350,6 @@ class AuthProvider with ChangeNotifier {
           // Dados de gamificação iniciados com valores padrão
           points: 0,
           seal: UserSeal.bronze,
-          isPremium: true,
-          premiumExpiresAt: trialExpiresAt,
           totalCheckIns: 0,
           totalReviews: 0,
           totalReferrals: 0,
@@ -428,12 +373,11 @@ class AuthProvider with ChangeNotifier {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('user', json.encode(_user!.toJson()));
 
-      _startBusinessPlanListenerIfNeeded();
+      // Removido: plano de negócio
 
       notifyListeners();
     } catch (e) {
       debugPrint('Erro ao carregar usuário do Firebase: $e');
-      // Mesmo com erro, criar usuário básico com trial Premium de TRIAL_DAYS dias para não travar o login
       try {
         final userTypeString = await SharedPreferences.getInstance().then((prefs) {
           final storedType = prefs.getString('userType');
@@ -454,15 +398,13 @@ class AuthProvider with ChangeNotifier {
           // Dados de gamificação iniciados com valores padrão
           points: 0,
           seal: UserSeal.bronze,
-          isPremium: true,
-          premiumExpiresAt: trialExpiresAt,
           totalCheckIns: 0,
           totalReviews: 0,
           totalReferrals: 0,
         );
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('user', json.encode(_user!.toJson()));
-        _startBusinessPlanListenerIfNeeded();
+        // Removido: lógica de listener de plano/business
         notifyListeners();
       } catch (e2) {
         debugPrint('Erro crítico ao criar usuário: $e2');
@@ -1162,7 +1104,7 @@ class AuthProvider with ChangeNotifier {
       await prefs.remove('user');
       await prefs.remove('userType');
       
-      _disposeBusinessPlanListener();
+      // Removido: plano de negócio
       _user = null;
       _firebaseUser = null;
       notifyListeners();
@@ -1197,8 +1139,6 @@ class AuthProvider with ChangeNotifier {
         phone: _user!.phone,
         points: _user!.points,
         seal: _user!.seal,
-        isPremium: _user!.isPremium,
-        premiumExpiresAt: _user!.premiumExpiresAt,
         totalCheckIns: _user!.totalCheckIns,
         totalReviews: _user!.totalReviews,
         totalReferrals: _user!.totalReferrals,
@@ -1239,8 +1179,6 @@ class AuthProvider with ChangeNotifier {
           phone: _user!.phone,
         points: _user!.points,
         seal: _user!.seal,
-        isPremium: _user!.isPremium,
-        premiumExpiresAt: _user!.premiumExpiresAt,
         totalCheckIns: _user!.totalCheckIns,
         totalReviews: _user!.totalReviews,
         totalReferrals: _user!.totalReferrals,
@@ -1285,7 +1223,7 @@ class AuthProvider with ChangeNotifier {
         // Salvar localmente também
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('user', json.encode(_user!.toJson()));
-        _startBusinessPlanListenerIfNeeded();
+        // Removido: lógica de listener de plano/business
         notifyListeners();
         debugPrint('✅ Dados do usuário recarregados do Firestore');
       } else {
@@ -1514,12 +1452,9 @@ class AuthProvider with ChangeNotifier {
       // Limpar dados locais
       final prefs = await SharedPreferences.getInstance();
       await prefs.clear();
-      
-      _disposeBusinessPlanListener();
+      // Removido: lógica de listener e plano/business
       _user = null;
       _firebaseUser = null;
-      _currentBusinessPlan = null;
-      
       _isLoading = false;
       notifyListeners();
       return true;

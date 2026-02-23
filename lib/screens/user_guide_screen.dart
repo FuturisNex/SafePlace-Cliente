@@ -134,15 +134,6 @@ class UserGuideScreen extends StatelessWidget {
             const SizedBox(height: 24),
 
             _buildSection(
-              title: '💳 Planos e acesso',
-              content:
-                  'Usuários finais têm acesso gratuito às funcionalidades essenciais.\n\n'
-                  'Estabelecimentos participam por meio do aplicativo Prato Seguro Empresas, '
-                  'com planos básico, intermediário, premium e corporate, ampliando visibilidade e integração com a comunidade.',
-            ),
-            const SizedBox(height: 24),
-
-            _buildSection(
               title: '📩 Suporte e contato',
               content:
                   'Precisa de ajuda?\n\n'

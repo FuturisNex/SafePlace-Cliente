@@ -27,8 +27,6 @@ class User {
   // Sistema de gamificação
   final int points; // Pontuação acumulada
   final UserSeal seal; // Selo atual (Bronze, Prata, Ouro)
-  final bool isPremium; // Assinatura Premium
-  final DateTime? premiumExpiresAt; // Data de expiração do Premium
   final int totalCheckIns; // Total de check-ins realizados
   final int totalReviews; // Total de avaliações realizadas
   final int totalReferrals; // Total de indicações de novos locais
@@ -48,8 +46,6 @@ class User {
     this.phone,
     this.points = 0,
     this.seal = UserSeal.bronze,
-    this.isPremium = false,
-    this.premiumExpiresAt,
     this.totalCheckIns = 0,
     this.totalReviews = 0,
     this.totalReferrals = 0,
@@ -101,8 +97,6 @@ class User {
               orElse: () => UserSeal.bronze,
             )
           : UserSeal.bronze,
-      isPremium: json['isPremium'] as bool? ?? false,
-      premiumExpiresAt: _parseDateTime(json['premiumExpiresAt']),
       totalCheckIns: json['totalCheckIns'] as int? ?? 0,
       totalReviews: json['totalReviews'] as int? ?? 0,
       totalReferrals: json['totalReferrals'] as int? ?? 0,
@@ -129,8 +123,6 @@ class User {
       'phone': phone,
       'points': points,
       'seal': seal.toString().split('.').last,
-      'isPremium': isPremium,
-      'premiumExpiresAt': premiumExpiresAt?.toIso8601String(),
       'totalCheckIns': totalCheckIns,
       'totalReviews': totalReviews,
       'totalReferrals': totalReferrals,
@@ -156,13 +148,6 @@ class User {
       return UserSeal.bronze;
     }
     return UserSeal.bronze;
-  }
-
-  // Verificar se o Premium está ativo
-  bool get isPremiumActive {
-    if (!isPremium) return false;
-    if (premiumExpiresAt == null) return true; // Premium permanente (por pontos)
-    return DateTime.now().isBefore(premiumExpiresAt!);
   }
 }
 

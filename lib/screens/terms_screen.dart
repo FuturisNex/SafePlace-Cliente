@@ -67,31 +67,7 @@ Estes Termos de Uso podem ser alterados a qualquer momento.
 O uso contínuo da plataforma após eventuais alterações implica aceitação automática das novas condições.
 
 10. Legislação e Foro
-Estes Termos são regidos pelas leis da República Federativa do Brasil, ficando eleito o foro da comarca de Curitiba/PR, com renúncia a qualquer outro, por mais privilegiado que seja.
-
-11. Planos, Assinaturas, Acesso Premium e Cancelamento
-11.1 Acesso Premium por Tempo Indeterminado
-Atualmente, o Prato Seguro disponibiliza aos usuários acesso aos recursos e funcionalidades Premium por tempo indeterminado, sem a cobrança de valores, como parte de uma fase promocional, experimental ou de disponibilização inicial da plataforma.
-
-Este acesso gratuito aos recursos Premium não caracteriza concessão vitalícia, podendo ser alterado, limitado ou encerrado a critério da Prato Seguro, respeitados os princípios da transparência e da boa-fé.
-
-Caso o modelo de acesso aos recursos Premium venha a ser modificado no futuro, incluindo a implementação de planos pagos, assinaturas ou restrições de funcionalidades, o usuário será devidamente informado com antecedência mínima de 30 (trinta) dias, por meio do aplicativo, site, e/ou outros canais oficiais de comunicação.
-
-11.2 Planos de Assinatura
-O aplicativo Prato Seguro poderá, a seu exclusivo critério, oferecer planos de assinatura nas modalidades Trimestral e Anual, ou em outras modalidades que venham a ser disponibilizadas, conforme as opções apresentadas de forma clara e transparente no aplicativo no momento da contratação.
-
-A contratação de qualquer plano de assinatura será sempre opcional e condicionada à manifestação expressa de consentimento do usuário, observadas as regras e políticas da Apple App Store ou Google Play Store, conforme a plataforma utilizada.
-
-11.3 Cancelamento, Renovação e Reembolso
-O usuário poderá cancelar a assinatura a qualquer momento por meio das ferramentas de gerenciamento disponibilizadas pela Apple App Store ou Google Play Store, de acordo com a plataforma utilizada na contratação.
-
-O cancelamento interrompe apenas a renovação automática da assinatura, permanecendo o acesso aos recursos e benefícios do plano ativo até o final do período já pago (trimestral, anual ou outro).
-
-Os valores pagos não são reembolsáveis, de forma total ou proporcional, inclusive em caso de cancelamento antecipado, salvo quando houver obrigação legal em sentido contrário, uma vez que os serviços e funcionalidades são disponibilizados imediatamente após a confirmação da assinatura.
-
-As regras de cobrança, renovação, cancelamento e eventuais reembolsos também seguem as políticas da loja de aplicativos utilizada no momento da contratação.
-
-Ao realizar a assinatura de qualquer plano, o usuário declara estar ciente e de acordo com estas condições, tendo acesso prévio, claro e transparente às informações antes da confirmação da contratação.''';
+Estes Termos são regidos pelas leis da República Federativa do Brasil, ficando eleito o foro da comarca de Curitiba/PR, com renúncia a qualquer outro, por mais privilegiado que seja.''';
 
   @override
   Widget build(BuildContext context) {

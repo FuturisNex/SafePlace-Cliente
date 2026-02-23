@@ -7,13 +7,7 @@ class AppTheme {
   static const Color secondaryGreen = Color(0xFF4CAF50);
   static const Color darkGreen = Color(0xFF1B5E20);
   
-  static const Color premiumGold = Color(0xFFD4AF37);
-  static const Color premiumGoldLight = Color(0xFFFFD700);
-  static const Color premiumGoldDark = Color(0xFFAA8C2C);
-
-  static const Color premiumBlue = Color(0xFF1565C0);
-  static const Color premiumBlueLight = Color(0xFF42A5F5);
-  static const Color premiumBlueDark = Color(0xFF0D47A1);
+  // Removido: Cores Premium
 
   static const Color background = Color(0xFFF8F9FB); // Off-white suave
   static const Color surface = Colors.white;
@@ -29,7 +23,7 @@ class AppTheme {
       colorScheme: ColorScheme.fromSeed(
         seedColor: primaryGreen,
         primary: primaryGreen,
-        secondary: premiumBlue,
+        secondary: secondaryGreen,
         surface: surface,
         background: background,
         onPrimary: Colors.white,

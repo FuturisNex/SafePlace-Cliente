@@ -324,52 +324,5 @@ class GamificationService {
       return [];
     }
   }
-
-  // ============ PREMIUM ============
-
-  /// Ativa Premium por assinatura
-  static Future<void> activatePremiumBySubscription(String userId, int months) async {
-    try {
-      final expiresAt = DateTime.now().add(Duration(days: months * 30));
-      await _firestore.collection('users').doc(userId).update({
-        'isPremium': true,
-        'premiumExpiresAt': expiresAt.toIso8601String(),
-      });
-      debugPrint('✅ Premium ativado por $months meses');
-    } catch (e) {
-      debugPrint('❌ Erro ao ativar Premium: $e');
-      rethrow;
-    }
-  }
-
-  /// Ativa Premium por pontos (1.000 pts = 1 mês)
-  static Future<void> activatePremiumByPoints(String userId, int months) async {
-    try {
-      const pointsPerMonth = 1000;
-      final pointsNeeded = months * pointsPerMonth;
-
-      final userDoc = await _firestore.collection('users').doc(userId).get();
-      if (!userDoc.exists) {
-        throw Exception('Usuário não encontrado');
-      }
-
-      final userPoints = userDoc.data()!['points'] as int? ?? 0;
-      if (userPoints < pointsNeeded) {
-        throw Exception('Pontos insuficientes');
-      }
-
-      final expiresAt = DateTime.now().add(Duration(days: months * 30));
-      await _firestore.collection('users').doc(userId).update({
-        'isPremium': true,
-        'premiumExpiresAt': expiresAt.toIso8601String(),
-        'points': FieldValue.increment(-pointsNeeded),
-      });
-
-      debugPrint('✅ Premium ativado por $months meses (${pointsNeeded} pontos)');
-    } catch (e) {
-      debugPrint('❌ Erro ao ativar Premium por pontos: $e');
-      rethrow;
-    }
-  }
 }
 

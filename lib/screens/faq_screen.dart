@@ -42,11 +42,6 @@ class _FaqScreenState extends State<FaqScreen> {
       icon: Icons.add_business,
     ),
     _FaqItem(
-      question: 'O que é a conta Premium?',
-      answer: 'A conta Premium oferece recursos exclusivos como:\n\n• Acesso antecipado a novos estabelecimentos\n• Filtros avançados de busca\n• Suporte prioritário\n• Sem anúncios\n• Badge especial no perfil',
-      icon: Icons.workspace_premium,
-    ),
-    _FaqItem(
       question: 'Como funciona o Delivery?',
       answer: 'O recurso de Delivery permite que você peça comida segura diretamente pelo app. Estabelecimentos parceiros oferecem entrega com garantia de preparo adequado para suas restrições alimentares.',
       icon: Icons.delivery_dining,
@@ -63,7 +58,7 @@ class _FaqScreenState extends State<FaqScreen> {
     ),
     _FaqItem(
       question: 'O app é gratuito?',
-      answer: 'Sim! O Prato Seguro é gratuito para usuários. Oferecemos uma versão Premium com recursos extras, mas todas as funcionalidades essenciais estão disponíveis gratuitamente.',
+      answer: 'Sim! O Prato Seguro é gratuito para usuários. Todas as funcionalidades essenciais estão disponíveis gratuitamente.',
       icon: Icons.money_off,
     ),
     _FaqItem(

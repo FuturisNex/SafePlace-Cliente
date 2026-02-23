@@ -18,7 +18,7 @@ import '../utils/translations.dart';
 import '../theme/app_theme.dart';
 import '../services/firebase_service.dart';
 import 'establishment_detail_screen.dart';
-import 'premium_screen.dart';
+// ...existing code...
 import 'delivery_screen.dart';
 import 'refer_establishment_screen.dart';
 import '../widgets/delivery_floating_banner.dart';
@@ -50,7 +50,6 @@ class _SearchScreenState extends State<SearchScreen> {
   double _maxDistance = 10.0; // km
   final List<String> _searchHistory = [];
   bool _hasSearchText = false;
-  bool _isPremiumTrialBannerDismissed = false;
   bool _isFeaturedSectionVisible = true;
   bool _isTopUIVisible = true;
   Timer? _featuredVisibilityTimer;
@@ -161,55 +160,11 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget build(BuildContext context) {
     return Consumer<EstablishmentProvider>(
       builder: (context, establishmentProvider, _) {
-        final authProvider = Provider.of<AuthProvider>(context, listen: false);
-        final user = authProvider.user;
-        final bool isBusinessUser = user?.type == UserType.business;
-        final bool isPremiumUser = user?.isPremiumActive ?? false;
+        // Removido lógica de usuário business/premium e cores relacionadas
+        Color bannerColor = AppTheme.primaryGreen.withOpacity(0.08);
 
-        Color bannerColor;
-        if (isBusinessUser) {
-          bannerColor = AppTheme.primaryGreen.withOpacity(0.04);
-        } else if (isPremiumUser) {
-          bannerColor = AppTheme.premiumBlueLight.withOpacity(0.10);
-        } else {
-          bannerColor = AppTheme.primaryGreen.withOpacity(0.08);
-        }
-
-        final bool showPremiumTrialBanner =
-            user != null &&
-            user.isPremiumActive &&
-            user.premiumExpiresAt != null &&
-            !_isPremiumTrialBannerDismissed;
-
-        // Lista de estabelecimentos patrocinados (boost ativos dentro do raio)
-        final DateTime now = DateTime.now();
-        const double maxSponsoredDistanceKm = 20.0;
-        final bool hasUserLocation =
-            establishmentProvider.userPosition != null;
-
-        final List<Establishment> sponsoredEstablishments =
-            establishmentProvider.filteredEstablishments
-                .where((e) {
-                  final bool isBoostActive = e.isBoosted &&
-                      (e.boostExpiresAt == null || e.boostExpiresAt!.isAfter(now));
-                  if (!isBoostActive) return false;
-
-                  // Para evitar "piscar" todos os patrocinados ao abrir o app,
-                  // só exibimos quando já houver localização do usuário
-                  if (!hasUserLocation) {
-                    return false;
-                  }
-
-                  return e.distance <= maxSponsoredDistanceKm;
-                })
-                .toList();
-
-        // Ordenar: Premium > Intermediário > Básico
-        sponsoredEstablishments
-            .sort((a, b) => b.planType.index.compareTo(a.planType.index));
-
-        final bool hasFeaturedEstablishments =
-            sponsoredEstablishments.isNotEmpty;
+        // Lista de estabelecimentos patrocinados removida (não há mais planos)
+        final bool hasFeaturedEstablishments = false;
 
         return Container(
           color: AppTheme.background,
@@ -297,11 +252,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     ),
 
                     // Seção Em Destaque (logo abaixo dos filtros)
-                    FeaturedEstablishmentsSection(
-                      establishments: sponsoredEstablishments,
-                      isVisible:
-                          _isFeaturedSectionVisible && hasFeaturedEstablishments,
-                    ),
+                    // Seção de destaques removida (não há mais planos/patrocínio)
                   ],
                 ),
               ),
@@ -576,30 +527,14 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   List<Establishment> _getFilteredAndSortedEstablishments(EstablishmentProvider provider) {
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    final user = authProvider.user;
-    final isPremium = user?.isPremiumActive ?? false;
-    
+    // Removeu toda lógica de premium/business
     List<Establishment> establishments = provider.filteredEstablishments;
-    
-    establishments = establishments.where((establishment) {
-      if (establishment.premiumUntil != null) {
-        final now = DateTime.now();
-        if (now.isBefore(establishment.premiumUntil!)) {
-          return isPremium;
-        }
-      }
-      return true;
-    }).toList();
-    
     if (_showOnlyOpen) {
       establishments = establishments.where((e) => e.isOpen).toList();
     }
-    
     if (_showOnlyNearby && provider.userPosition != null) {
       establishments = establishments.where((e) => e.distance <= _maxDistance).toList();
     }
-    
     switch (_sortOption) {
       case SortOption.distance:
         establishments.sort((a, b) => a.distance.compareTo(b.distance));
@@ -618,101 +553,10 @@ class _SearchScreenState extends State<SearchScreen> {
         });
         break;
     }
-    
     return establishments;
   }
 
-  Widget _buildPremiumTrialBanner(BuildContext context, User user) {
-    if (!user.isPremiumActive || user.premiumExpiresAt == null) {
-      return const SizedBox.shrink();
-    }
-
-    final expiresAt = user.premiumExpiresAt!;
-    final now = DateTime.now();
-    int daysRemaining = expiresAt.difference(now).inDays;
-    if (daysRemaining < 0) {
-      daysRemaining = 0;
-    }
-
-    return Container(
-      width: double.infinity,
-      margin: const EdgeInsets.symmetric(horizontal: 16),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: AppTheme.premiumBlueLight.withOpacity(0.10),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppTheme.premiumBlueLight),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Icon(
-            Icons.star,
-            color: AppTheme.premiumBlue,
-            size: 24,
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  Translations.getText(context, 'premiumTrialHomeTitle'),
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: AppTheme.textPrimary,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  Translations.getText(context, 'premiumTrialHomeDescription'),
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey.shade800,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                if (!Platform.isIOS)
-                  Text(
-                    '${Translations.getText(context, 'expiresIn')} ${_formatPremiumDate(expiresAt)}'
-                    '${daysRemaining > 0 ? '  •  $daysRemaining ' + Translations.getText(context, 'premiumDaysRemaining') : ''}',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey.shade700,
-                    ),
-                  ),
-              ],
-            ),
-          ),
-          const SizedBox(width: 8),
-          InkWell(
-            onTap: () {
-              setState(() {
-                _isPremiumTrialBannerDismissed = true;
-              });
-            },
-            borderRadius: BorderRadius.circular(16),
-            child: const Padding(
-              padding: EdgeInsets.all(4),
-              child: Icon(
-                Icons.close,
-                size: 18,
-                color: Colors.grey,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  String _formatPremiumDate(DateTime date) {
-    final day = date.day.toString().padLeft(2, '0');
-    final month = date.month.toString().padLeft(2, '0');
-    final year = date.year.toString();
-    return '$day/$month/$year';
-  }
+  // Widget de banner premium removido
 
   void openAdvancedFiltersFromHeader() {
     final provider = Provider.of<EstablishmentProvider>(context, listen: false);
@@ -822,10 +666,9 @@ class _AdvancedFiltersSheetState extends State<_AdvancedFiltersSheet> {
               children: [
                 Row(
                   children: [
-                    const Icon(Icons.star, color: AppTheme.premiumBlue, size: 24),
                     const SizedBox(width: 8),
                     Text(
-                      '${Translations.getText(context, 'advancedFilters')} (${Translations.getText(context, 'premium')})',
+                      Translations.getText(context, 'advancedFilters'),
                       style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,

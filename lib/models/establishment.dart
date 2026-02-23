@@ -259,7 +259,7 @@ class Establishment {
   final String? weekendClosingTime; // Horário de fechamento fim de semana (HH:mm) - opcional
   final List<int>? openingDays; // Dias da semana que está aberto (0=domingo, 1=segunda, ..., 6=sábado)
   final WeeklySchedule? weeklySchedule; // Horários personalizados por dia da semana (opcional)
-  final DateTime? premiumUntil; // Data até quando é exclusivo para Premium (null = disponível para todos)
+  final DateTime? premiumUntil;
   final TechnicalCertificationStatus certificationStatus;
   final DateTime? lastInspectionDate;
   final String? lastInspectionStatus;
