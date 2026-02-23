@@ -6,7 +6,6 @@ import 'providers/auth_provider.dart';
 import 'providers/establishment_provider.dart';
 import 'providers/locale_provider.dart';
 import 'providers/review_provider.dart';
-import 'providers/cart_provider.dart';
 import 'providers/feature_flags_provider.dart';
 import 'services/notification_service.dart';
 import 'services/mapbox_service.dart';
@@ -15,7 +14,6 @@ import 'theme/app_theme.dart';
 import 'screens/splash_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/home_screen.dart';
-import 'services/iap_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -38,9 +36,6 @@ void main() async {
 
   await MapboxService.initialize();
   
-  // Inicializar IAP no iOS
-  IapService().initialize();
-  
   runApp(const SafePlateApp());
 }
 
@@ -55,7 +50,6 @@ class SafePlateApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => EstablishmentProvider()),
         ChangeNotifierProvider(create: (_) => ReviewProvider()),
-        ChangeNotifierProvider(create: (_) => CartProvider()),
         ChangeNotifierProvider(create: (_) => FeatureFlagsProvider()),
       ],
       child: Consumer<LocaleProvider>(

@@ -146,12 +146,6 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                                   context, 'achievements') ??
                                 'Conquistas',
                               textAlign: TextAlign.center)),
-                          // Tab(
-                          //     child: Text(
-                          //         Translations.getText(
-                          //                 context, 'premiumPlanTab') ??
-                          //             'Plano',
-                          //         textAlign: TextAlign.center)),
                           Tab(
                             child: Text(
                               Translations.getText(context, 'settings') ??
@@ -168,7 +162,6 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                 children: [
                   _buildActivitiesTab(user),
                   _buildAchievementsTab(user),
-                  // _buildPlanTab(user), // Aba de plano comentada
                   _buildAboutTab(user),
                 ],
               ),

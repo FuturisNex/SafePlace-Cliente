@@ -25,7 +25,6 @@ import 'user_search_screen.dart';
 import 'trips_screen.dart';
 import 'establishment_list_screen.dart';
 import 'boost_overview_screen.dart';
-import 'delivery_screen.dart';
 import '../config.dart';
 
 const String kOfficialWhatsAppGroupUrl =
@@ -626,7 +625,6 @@ class _HomeScreenState extends State<HomeScreen> {
           SearchScreen(key: SearchScreen.searchKey, header: header),
           const EstablishmentListScreen(),
           const TripsScreen(),
-          const DeliveryScreen(),
           const FavoritesScreen(),
           const UserProfileScreen(),
           const AccountScreen(),
@@ -647,7 +645,6 @@ class _HomeScreenState extends State<HomeScreen> {
           SearchScreen(key: SearchScreen.searchKey, header: header),
           const EstablishmentListScreen(),
           const TripsScreen(),
-          const DeliveryScreen(),
           const LoginScreen(),
         ];
       } else {

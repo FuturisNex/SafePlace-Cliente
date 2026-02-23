@@ -233,7 +233,6 @@ class AuthProvider with ChangeNotifier {
       final userJson = prefs.getString('user');
       if (userJson != null) {
         _user = model.User.fromJson(json.decode(userJson));
-        // Removido: plano de negócio
         notifyListeners();
       }
     } catch (e) {
@@ -373,8 +372,6 @@ class AuthProvider with ChangeNotifier {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('user', json.encode(_user!.toJson()));
 
-      // Removido: plano de negócio
-
       notifyListeners();
     } catch (e) {
       debugPrint('Erro ao carregar usuário do Firebase: $e');
@@ -404,7 +401,6 @@ class AuthProvider with ChangeNotifier {
         );
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('user', json.encode(_user!.toJson()));
-        // Removido: lógica de listener de plano/business
         notifyListeners();
       } catch (e2) {
         debugPrint('Erro crítico ao criar usuário: $e2');
@@ -1104,7 +1100,6 @@ class AuthProvider with ChangeNotifier {
       await prefs.remove('user');
       await prefs.remove('userType');
       
-      // Removido: plano de negócio
       _user = null;
       _firebaseUser = null;
       notifyListeners();
@@ -1223,7 +1218,6 @@ class AuthProvider with ChangeNotifier {
         // Salvar localmente também
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('user', json.encode(_user!.toJson()));
-        // Removido: lógica de listener de plano/business
         notifyListeners();
         debugPrint('✅ Dados do usuário recarregados do Firestore');
       } else {
@@ -1452,7 +1446,6 @@ class AuthProvider with ChangeNotifier {
       // Limpar dados locais
       final prefs = await SharedPreferences.getInstance();
       await prefs.clear();
-      // Removido: lógica de listener e plano/business
       _user = null;
       _firebaseUser = null;
       _isLoading = false;

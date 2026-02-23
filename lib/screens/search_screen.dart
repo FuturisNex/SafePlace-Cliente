@@ -18,10 +18,7 @@ import '../utils/translations.dart';
 import '../theme/app_theme.dart';
 import '../services/firebase_service.dart';
 import 'establishment_detail_screen.dart';
-// ...existing code...
-import 'delivery_screen.dart';
 import 'refer_establishment_screen.dart';
-import '../widgets/delivery_floating_banner.dart';
 
 class SearchScreen extends StatefulWidget {
   final Widget? header;
@@ -53,10 +50,6 @@ class _SearchScreenState extends State<SearchScreen> {
   bool _isFeaturedSectionVisible = true;
   bool _isTopUIVisible = true;
   Timer? _featuredVisibilityTimer;
-  
-  // Delivery banner
-  bool _showDeliveryBanner = false;
-  DeliveryBannerController? _deliveryBannerController;
 
   @override
   void initState() {
@@ -67,19 +60,7 @@ class _SearchScreenState extends State<SearchScreen> {
         _hasSearchText = _searchController.text.isNotEmpty;
       });
     });
-    
-    // Iniciar controller do banner de delivery
-    _deliveryBannerController = DeliveryBannerController(
-      onVisibilityChanged: (visible) {
-        if (mounted) {
-          setState(() {
-            _showDeliveryBanner = visible;
-          });
-        }
-      },
-    );
-    _deliveryBannerController!.start();
-    
+      
     // Mostrar dialog de boas-vindas na primeira vez
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
@@ -103,7 +84,6 @@ class _SearchScreenState extends State<SearchScreen> {
   void dispose() {
     _searchController.dispose();
     _featuredVisibilityTimer?.cancel();
-    _deliveryBannerController?.dispose();
     super.dispose();
   }
 
@@ -160,10 +140,8 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget build(BuildContext context) {
     return Consumer<EstablishmentProvider>(
       builder: (context, establishmentProvider, _) {
-        // Removido lógica de usuário business/premium e cores relacionadas
         Color bannerColor = AppTheme.primaryGreen.withOpacity(0.08);
 
-        // Lista de estabelecimentos patrocinados removida (não há mais planos)
         final bool hasFeaturedEstablishments = false;
 
         return Container(
@@ -250,39 +228,9 @@ class _SearchScreenState extends State<SearchScreen> {
                         ),
                       ),
                     ),
-
-                    // Seção Em Destaque (logo abaixo dos filtros)
-                    // Seção de destaques removida (não há mais planos/patrocínio)
                   ],
                 ),
-              ),
-              
-              // 5. Banner flutuante de Delivery (rodapé)
-              Consumer<FeatureFlagsProvider>(
-                builder: (context, featureFlags, _) {
-                  if (!featureFlags.deliveryEnabled || !_showDeliveryBanner) {
-                    return const SizedBox.shrink();
-                  }
-                  return Positioned(
-                    bottom: 16,
-                    left: 0,
-                    right: 0,
-                    child: DeliveryFloatingBanner(
-                      onTap: () {
-                        _deliveryBannerController?.dismiss();
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => const DeliveryScreen(),
-                          ),
-                        );
-                      },
-                      onDismiss: () {
-                        _deliveryBannerController?.dismiss();
-                      },
-                    ),
-                  );
-                },
-              ),
+              ),   
             ],
           ),
         );

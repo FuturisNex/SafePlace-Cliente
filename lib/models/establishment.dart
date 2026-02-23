@@ -184,7 +184,6 @@ extension PlanTypeExtension on PlanType {
     }
   }
 
-  /// Verifica se é um plano pago
   bool get isPaid => this != PlanType.basic;
 }
 
