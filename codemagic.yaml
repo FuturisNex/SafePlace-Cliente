@@ -2,49 +2,53 @@ workflows:
   flutter-app:
     name: Build and Release Flutter App
     max_build_duration: 60
+
     environment:
       flutter: stable
       xcode: latest
       cocoapods: default
       vars:
-        APP_ID: "com.seuprojeto.safeplace"
-        FLUTTER_BUILD_DIR: build/
+        APP_ID: "com.safeplace.cliente"
+
     triggering:
       events:
         - push
-        - pull_request
       branch_patterns:
-        - "main"
-        - "master"
-        - "release/*"
+        - pattern: "main"
+          include: true
+        - pattern: "master"
+          include: true
+        - pattern: "release/*"
+          include: true
+
+    integrations:
+      app_store_connect:
+        api_key: $APP_STORE_CONNECT_PRIVATE_KEY
+        issuer_id: $APP_STORE_CONNECT_ISSUER_ID
+        key_id: $APP_STORE_CONNECT_KEY_ID
+
     scripts:
       - name: Install dependencies
         script: |
           flutter pub get
-      - name: Run code generation (if needed)
-        script: |
-          if [ -f "pubspec.yaml" ] && grep -q build_runner pubspec.yaml; then
-            flutter pub run build_runner build --delete-conflicting-outputs
-          fi
+
       - name: Analyze project
         script: |
           flutter analyze
+
       - name: Run tests
         script: |
           flutter test
+
       - name: Build iOS
         script: |
-          flutter build ios --release --no-codesign --build-dir=$FLUTTER_BUILD_DIR
+          flutter build ios --release --no-codesign
+
     artifacts:
       - build/ios/iphoneos/*.app
       - build/ios/ipa/*.ipa
+
     publishing:
-      email:
-        recipients:
-          - seuemail@dominio.com
-        notify:
-          success: true
-          failure: true
       app_store_connect:
         auth: integration
         submit_to_testflight: true
