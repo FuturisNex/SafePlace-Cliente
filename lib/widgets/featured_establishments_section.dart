@@ -6,7 +6,6 @@ import '../providers/auth_provider.dart';
 import '../screens/establishment_detail_screen.dart';
 import '../services/firebase_service.dart';
 
-/// Seção de estabelecimentos em destaque com ordenação exclusiva por impulso e plano.
 /// Diferencial: lógica própria para destacar estabelecimentos relevantes ao usuário.
 class FeaturedEstablishmentsSection extends StatefulWidget {
   final List<Establishment> establishments;

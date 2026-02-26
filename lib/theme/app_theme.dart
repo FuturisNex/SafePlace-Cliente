@@ -7,8 +7,6 @@ class AppTheme {
   static const Color secondaryGreen = Color(0xFF4CAF50);
   static const Color darkGreen = Color(0xFF1B5E20);
   
-  // Removido: Cores Premium
-
   static const Color background = Color(0xFFF8F9FB); // Off-white suave
   static const Color surface = Colors.white;
   

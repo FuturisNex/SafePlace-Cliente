@@ -99,8 +99,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // Removido: função de data premium
-
   Widget _buildTopReviewersBanner(BuildContext context) {
     return Container(
       width: double.infinity,
@@ -164,7 +162,6 @@ class _HomeScreenState extends State<HomeScreen> {
   final FocusNode _homeSearchFocusNode = FocusNode();
   final FocusNode _rootFocusNode = FocusNode();
   final List<String> _searchHistory = [];
-  // Removido: premium trial banner
   
   // Sugestões de busca
   OverlayEntry? _searchSuggestionsOverlay;

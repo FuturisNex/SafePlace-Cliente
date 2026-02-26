@@ -140,7 +140,6 @@ class EstablishmentProvider with ChangeNotifier {
         openingTime: establishment.openingTime,
         closingTime: establishment.closingTime,
         openingDays: establishment.openingDays,
-        premiumUntil: establishment.premiumUntil,
         certificationStatus: establishment.certificationStatus,
         lastInspectionDate: establishment.lastInspectionDate,
         lastInspectionStatus: establishment.lastInspectionStatus,
@@ -148,7 +147,6 @@ class EstablishmentProvider with ChangeNotifier {
         boostExpiresAt: establishment.boostExpiresAt,
         boostScore: establishment.boostScore,
         boostCampaignId: establishment.boostCampaignId,
-        planType: establishment.planType,
         state: establishment.state,
         city: establishment.city,
         neighborhood: establishment.neighborhood,
@@ -304,12 +302,7 @@ class EstablishmentProvider with ChangeNotifier {
         return aCertified ? -1 : 1;
       }
 
-      // 3. Terceiro: estabelecimentos premium
-      final aPremiumActive = a.premiumUntil != null && a.premiumUntil!.isAfter(now);
-      final bPremiumActive = b.premiumUntil != null && b.premiumUntil!.isAfter(now);
-      if (aPremiumActive != bPremiumActive) {
-        return aPremiumActive ? -1 : 1;
-      }
+      // 3. Terceiro: estabelecimentos premium (removido)
 
       // 4. Por último: ordenar por distância
       return a.distance.compareTo(b.distance);

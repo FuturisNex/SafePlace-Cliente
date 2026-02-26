@@ -59,6 +59,17 @@
 	<string>O aplicativo utiliza a localização apenas para funcionalidades relacionadas à sua região, como exibição de estabelecimentos próximos. A localização não é rastreada continuamente em segundo plano.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>O aplicativo utiliza a localização apenas para funcionalidades relacionadas à sua região, como exibição de estabelecimentos próximos. A localização não é rastreada continuamente em segundo plano.</string>
+	<!--
+	  LSApplicationQueriesSchemes permite que o app verifique e abra outros aplicativos de navegação (Google Maps, Waze) via url_launcher.
+	  Necessário para a funcionalidade "Ir até o local" funcionar corretamente no iOS, conforme documentação oficial Flutter:
+	  https://pub.dev/packages/url_launcher#ios
+	-->
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>googlemaps</string>
+		<string>comgooglemaps</string>
+		<string>waze</string>
+	</array>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>

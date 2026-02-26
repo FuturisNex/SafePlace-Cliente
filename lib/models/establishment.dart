@@ -153,39 +153,6 @@ class WeeklySchedule {
   ];
 }
 
-enum PlanType {
-  basic,
-  intermediate,
-  premium,
-}
-
-extension PlanTypeExtension on PlanType {
-  /// Número máximo de fotos permitidas por estabelecimento
-  int get maxEstablishmentPhotos {
-    switch (this) {
-      case PlanType.basic:
-        return 1;
-      case PlanType.intermediate:
-        return 5;
-      case PlanType.premium:
-        return 10;
-    }
-  }
-
-  /// Label do plano para exibição
-  String get label {
-    switch (this) {
-      case PlanType.basic:
-        return 'Básico';
-      case PlanType.intermediate:
-        return 'Intermediário';
-      case PlanType.premium:
-        return 'Premium';
-    }
-  }
-
-  bool get isPaid => this != PlanType.basic;
-}
 
 class Establishment {
   final String id;
@@ -258,7 +225,6 @@ class Establishment {
   final String? weekendClosingTime; // Horário de fechamento fim de semana (HH:mm) - opcional
   final List<int>? openingDays; // Dias da semana que está aberto (0=domingo, 1=segunda, ..., 6=sábado)
   final WeeklySchedule? weeklySchedule; // Horários personalizados por dia da semana (opcional)
-  final DateTime? premiumUntil;
   final TechnicalCertificationStatus certificationStatus;
   final DateTime? lastInspectionDate;
   final String? lastInspectionStatus;
@@ -266,7 +232,6 @@ class Establishment {
   final DateTime? boostExpiresAt;
   final double? boostScore; // Score efetivo do boost (para ordenação no leilão)
   final String? boostCampaignId; // ID da campanha de boost ativa
-  final PlanType planType;
 
   // Localização hierárquica
   final String? state;        // "São Paulo", "Paraná"  
@@ -283,49 +248,47 @@ class Establishment {
   final double? rating;             // Avaliação média (0-5)
   final int? ratingCount;           // Quantidade de avaliações
 
-  Establishment({
-    required this.id,
-    required this.name,
-    required this.category,
-    required this.latitude,
-    required this.longitude,
-    required this.distance,
-    required this.avatarUrl,
-    List<String>? photoUrls,
-    required this.difficultyLevel,
-    required this.dietaryOptions,
-    required bool isOpen,
-    this.ownerId,
-    this.address,
-    this.phone,
-    this.openingTime,
-    this.closingTime,
-    this.weekendOpeningTime,
-    this.weekendClosingTime,
-    this.openingDays,
-    this.weeklySchedule,
-    this.premiumUntil,
-    this.certificationStatus = TechnicalCertificationStatus.none,
-    this.lastInspectionDate,
-    this.lastInspectionStatus,
-    this.isBoosted = false,
-    this.boostExpiresAt,
-    this.boostScore,
-    this.boostCampaignId,
-    this.planType = PlanType.basic,
-    this.state,
-    this.city,
-    this.neighborhood,
-    this.hasDelivery = false,
-    this.deliveryFee,
-    this.deliveryTimeMin,
-    this.deliveryTimeMax,
-    this.minOrderValue,
-    this.deliveryRadius,
-    this.rating,
-    this.ratingCount,
-  })  : photoUrls = photoUrls ?? const [],
-        _isOpen = isOpen;
+    Establishment({
+      required this.id,
+      required this.name,
+      required this.category,
+      required this.latitude,
+      required this.longitude,
+      required this.distance,
+      required this.avatarUrl,
+      List<String>? photoUrls,
+      required this.difficultyLevel,
+      required this.dietaryOptions,
+      required bool isOpen,
+      this.ownerId,
+      this.address,
+      this.phone,
+      this.openingTime,
+      this.closingTime,
+      this.weekendOpeningTime,
+      this.weekendClosingTime,
+      this.openingDays,
+      this.weeklySchedule,
+      this.certificationStatus = TechnicalCertificationStatus.none,
+      this.lastInspectionDate,
+      this.lastInspectionStatus,
+      this.isBoosted = false,
+      this.boostExpiresAt,
+      this.boostScore,
+      this.boostCampaignId,
+      this.state,
+      this.city,
+      this.neighborhood,
+      this.hasDelivery = false,
+      this.deliveryFee,
+      this.deliveryTimeMin,
+      this.deliveryTimeMax,
+      this.minOrderValue,
+      this.deliveryRadius,
+      this.rating,
+      this.ratingCount,
+    })  : photoUrls = photoUrls ?? const [],
+      _isOpen = isOpen;
 
   factory Establishment.fromJson(Map<String, dynamic> json) {
     // Calcular isOpen baseado no horário e dias se disponível
@@ -363,16 +326,6 @@ class Establishment {
     final boostScore = (json['boostScore'] as num?)?.toDouble();
     final boostCampaignId = json['boostCampaignId'] as String?;
 
-    PlanType planType = PlanType.basic;
-    if (json['planType'] != null) {
-      try {
-        planType = PlanType.values.firstWhere(
-          (e) => e.name == json['planType'],
-          orElse: () => PlanType.basic,
-        );
-      } catch (_) {}
-    }
-
     final List<String> photoUrls = (json['photoUrls'] as List<dynamic>?)
             ?.map((e) => e.toString())
             .toList() ??
@@ -403,22 +356,14 @@ class Establishment {
       openingTime: json['openingTime'] as String?,
       closingTime: json['closingTime'] as String?,
       weekendOpeningTime: weekendOpeningTime,
-      weekendClosingTime: weekendClosingTime,
-      openingDays: openingDays,
-      weeklySchedule: weeklySchedule,
-      premiumUntil: json['premiumUntil'] != null
-          ? DateTime.parse(json['premiumUntil'] as String)
-          : null,
       certificationStatus: TechnicalCertificationStatus.fromString(
         json['certificationStatus'] as String? ?? 'none',
       ),
       lastInspectionDate: lastInspectionDate,
       lastInspectionStatus: lastInspectionStatus,
       isBoosted: isBoosted,
-      boostExpiresAt: boostExpiresAt,
       boostScore: boostScore,
       boostCampaignId: boostCampaignId,
-      planType: planType,
       state: json['state'] as String?,
       city: json['city'] as String?,
       neighborhood: json['neighborhood'] as String?,
@@ -454,7 +399,6 @@ class Establishment {
           return false; // Não está aberto neste dia da semana
         }
       }
-      
       // Determinar se é fim de semana (sábado=6, domingo=0)
       final isWeekend = currentDayOfWeek == 0 || currentDayOfWeek == 6;
       
@@ -484,6 +428,7 @@ class Establishment {
     } catch (e) {
       return true; // Em caso de erro, assume que está aberto
     }
+    return true; // Garantir retorno booleano
   }
   
   static TimeOfDay? _parseTime(String time) {
@@ -536,13 +481,11 @@ class Establishment {
       'weekendClosingTime': weekendClosingTime,
       'openingDays': openingDays,
       if (weeklySchedule != null) 'weeklySchedule': weeklySchedule!.toJson(),
-      'premiumUntil': premiumUntil?.toIso8601String(),
       'certificationStatus': certificationStatus.toString().split('.').last,
       'lastInspectionDate': lastInspectionDate?.toIso8601String(),
       'lastInspectionStatus': lastInspectionStatus,
       'isBoosted': isBoosted,
       'boostExpiresAt': boostExpiresAt?.toIso8601String(),
-      'planType': planType.name,
       'state': state,
       'city': city,
       'neighborhood': neighborhood,

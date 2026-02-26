@@ -73,13 +73,11 @@ class BoostService {
     required double dailyBudget,
     String? city,
     String? state,
-    String? planType,
   }) async {
     final queryParams = {
       'dailyBudget': dailyBudget.toString(),
       if (city != null) 'city': city,
       if (state != null) 'state': state,
-      if (planType != null) 'planType': planType,
     };
 
     final uri = Uri.parse('$_baseUrl/api/boost/estimate-position')

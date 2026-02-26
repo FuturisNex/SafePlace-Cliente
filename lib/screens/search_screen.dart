@@ -475,7 +475,6 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   List<Establishment> _getFilteredAndSortedEstablishments(EstablishmentProvider provider) {
-    // Removeu toda lógica de premium/business
     List<Establishment> establishments = provider.filteredEstablishments;
     if (_showOnlyOpen) {
       establishments = establishments.where((e) => e.isOpen).toList();
@@ -503,8 +502,6 @@ class _SearchScreenState extends State<SearchScreen> {
     }
     return establishments;
   }
-
-  // Widget de banner premium removido
 
   void openAdvancedFiltersFromHeader() {
     final provider = Provider.of<EstablishmentProvider>(context, listen: false);

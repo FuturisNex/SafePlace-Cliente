@@ -23,7 +23,7 @@ class _FaqScreenState extends State<FaqScreen> {
     ),
     _FaqItem(
       question: 'O que são os selos de verificação?',
-      answer: 'Os selos indicam a confiabilidade do estabelecimento:\n\n🏆 **Selo Popular**: Estabelecimento com 5+ avaliações positivas da comunidade.\n\n✅ **Verificado**: Estabelecimento verificado pela equipe Prato Seguro.\n\n⭐ **Premium**: Estabelecimento parceiro com recursos exclusivos.',
+      answer: 'Os selos indicam a confiabilidade do estabelecimento:\n\n🏆 **Selo Popular**: Estabelecimento com 5+ avaliações positivas da comunidade.\n\n✅ **Verificado**: Estabelecimento verificado pela equipe Prato Seguro.\n\n⭐ **Selo**: Estabelecimento parceiro com recursos exclusivos.',
       icon: Icons.verified,
     ),
     _FaqItem(

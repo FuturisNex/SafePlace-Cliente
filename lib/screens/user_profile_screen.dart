@@ -94,22 +94,6 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                         icon: const Icon(Icons.share_outlined),
                         onPressed: () => _shareAchievements(user),
                       ),
-                      // if (user.isPremiumActive)
-                      //   Padding(
-                      //     padding: const EdgeInsets.only(right: 8.0),
-                      //     child: Chip(
-                      //       label: const Text(
-                      //         'PREMIUM',
-                      //         style: TextStyle(
-                      //           fontSize: 10,
-                      //           fontWeight: FontWeight.bold,
-                      //           color: Colors.white,
-                      //         ),
-                      //       ),
-                      //       backgroundColor: AppTheme.premiumBlue,
-                      //       visualDensity: VisualDensity.compact,
-                      //     ),
-                      //   ),
                     ],
                     flexibleSpace: FlexibleSpaceBar(
                       background: _buildSocialProfileHeader(user),
@@ -173,8 +157,6 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   }
 
   Widget _buildSocialProfileHeader(User user) {
-    // Removido: lógica premium
-    final isPremium = false;
     return Stack(
       children: [
         // Capa (Cover Photo)
@@ -242,16 +224,12 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       border: Border.all(
-                        color:
-                            isPremium ? AppTheme.primaryGreen : user.seal.color,
+                        color: user.seal.color,
                         width: 4,
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: (isPremium
-                                  ? AppTheme.primaryGreen
-                                  : user.seal.color)
-                              .withOpacity(0.3),
+                          color: user.seal.color.withOpacity(0.3),
                           blurRadius: 16,
                           spreadRadius: 2,
                         ),
@@ -279,8 +257,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                   // Botão de Alterar Foto (Câmera)
                   Positioned(
                     bottom: 0,
-                    right:
-                        isPremium ? 28 : 0, // Ajusta posição se tiver estrela
+                    right: 0,
                     child: GestureDetector(
                       onTap: () async {
                         // TODO: Implementar mudança de foto
@@ -491,72 +468,6 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     );
   }
 
-  Widget _buildPlanTab(User user) {
-
-    // Removido: lógica premium
-    return ListView(
-      padding: const EdgeInsets.all(24),
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(bottom: 16),
-          child: Text(
-            Translations.getText(context, 'premiumPlanTab'),
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-        ),
-        Card(
-          elevation: 0,
-          color: Colors.grey.shade50,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-            side: BorderSide(color: Colors.grey.shade200),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Bem-vindo ao Prato Seguro!',
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Aproveite todos os recursos disponíveis no aplicativo! Caso ocorram alterações nesse modelo no futuro, você será informado com antecedência, conforme os Termos de Uso da plataforma.',
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: Colors.grey,
-                    height: 1.4,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-
-        /* const SizedBox(height: 16),
-        SizedBox(
-          width: double.infinity,
-          child: OutlinedButton(
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => const PremiumScreen()),
-              );
-            },
-            child: Text(Platform.isIOS
-                ? 'Ver Vantagens'
-                : Translations.getText(context, 'seePlanDetails')),
-          ),
-        ),
-        */
-
-        const SizedBox(height: 100),
-      ],
-    );
-  }
 
   // Placeholder tabs (implementações abaixo)
   Widget _buildActivitiesTab(User user) {
@@ -712,10 +623,6 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
               borderRadius: BorderRadius.circular(4),
             ),
             const SizedBox(height: 8),
-            Text(
-              '${1000 - (user.points % 1000)} ${Translations.getText(context, 'pointsToRedeemPremium')}',
-              style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
-            ),
             const SizedBox(height: 20),
 
             // Progresso para o próximo selo
@@ -773,173 +680,6 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     );
   }
 
-  Widget _buildPremiumBanner(User user) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 0),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            AppTheme.secondaryGreen,
-            AppTheme.primaryGreen,
-            Colors.green,
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: AppTheme.secondaryGreen.withOpacity(0.5),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: AppTheme.secondaryGreen,
-            width: 2,
-          ),
-        ),
-        padding: const EdgeInsets.all(20),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.3),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Icons.star,
-                color: Colors.white,
-                size: 32,
-              ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    Translations.getText(context, 'premiumAccountActive'),
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      shadows: [
-                        Shadow(
-                          color: Colors.black.withOpacity(0.3),
-                          blurRadius: 4,
-                        ),
-                      ],
-                    ),
-                  ),
-
-                ],
-              ),
-            ),
-            Icon(
-              Icons.verified,
-              color: Colors.white,
-              size: 32,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildBecomePremiumButton(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            AppTheme.secondaryGreen,
-            Colors.green,
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: AppTheme.secondaryGreen.withOpacity(0.5),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: () {
-            CustomNotification.info(
-              context,
-              Translations.getText(context, 'becomePremiumInfo'),
-            );
-          },
-          borderRadius: BorderRadius.circular(16),
-          child: Container(
-            padding: const EdgeInsets.all(20),
-            child: Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.3),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.star,
-                    color: Colors.white,
-                    size: 32,
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        Translations.getText(context, 'becomePremium'),
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          shadows: [
-                            Shadow(
-                              color: Colors.black.withOpacity(0.3),
-                              blurRadius: 4,
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        Translations.getText(context, 'premiumBenefits'),
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.white.withOpacity(0.9),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Icon(
-                  Icons.arrow_forward_ios,
-                  color: Colors.white,
-                  size: 24,
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
 
   Widget _buildCheckInsSection(BuildContext context, User user) {
     return Card(

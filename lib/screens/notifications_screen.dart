@@ -120,7 +120,7 @@ class NotificationsScreen extends StatelessWidget {
       case 'new_certified_establishment':
         return Icons.verified;
       case 'seal_progress':
-        return Icons.workspace_premium;
+        return Icons.notifications;
       case 'coupon_available':
         return Icons.local_offer;
       default:

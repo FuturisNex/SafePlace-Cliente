@@ -139,17 +139,6 @@ class DeliveryCard extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
               ),
             ),
-            // if (establishment.planType != PlanType.basic)
-            //   Padding(
-            //     padding: const EdgeInsets.only(left: 4),
-            //     child: Icon(
-            //       Icons.verified,
-            //       size: 16,
-            //       color: establishment.planType == PlanType.premium
-            //           ? Colors.blue
-            //           : Colors.green,
-            //     ),
-            //   ),
           ],
         ),
         const SizedBox(height: 4),

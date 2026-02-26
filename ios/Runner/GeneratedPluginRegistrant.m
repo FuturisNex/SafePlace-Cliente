@@ -84,12 +84,6 @@
 @import image_picker_ios;
 #endif
 
-#if __has_include(<in_app_purchase_storekit/InAppPurchasePlugin.h>)
-#import <in_app_purchase_storekit/InAppPurchasePlugin.h>
-#else
-@import in_app_purchase_storekit;
-#endif
-
 #if __has_include(<mapbox_maps_flutter/MapboxMapsPlugin.h>)
 #import <mapbox_maps_flutter/MapboxMapsPlugin.h>
 #else
@@ -154,7 +148,6 @@
   [GeolocatorPlugin registerWithRegistrar:[registry registrarForPlugin:@"GeolocatorPlugin"]];
   [FLTGoogleSignInPlugin registerWithRegistrar:[registry registrarForPlugin:@"FLTGoogleSignInPlugin"]];
   [FLTImagePickerPlugin registerWithRegistrar:[registry registrarForPlugin:@"FLTImagePickerPlugin"]];
-  [InAppPurchasePlugin registerWithRegistrar:[registry registrarForPlugin:@"InAppPurchasePlugin"]];
   [MapboxMapsPlugin registerWithRegistrar:[registry registrarForPlugin:@"MapboxMapsPlugin"]];
   [FPPPackageInfoPlusPlugin registerWithRegistrar:[registry registrarForPlugin:@"FPPPackageInfoPlusPlugin"]];
   [FPPSharePlusPlugin registerWithRegistrar:[registry registrarForPlugin:@"FPPSharePlusPlugin"]];

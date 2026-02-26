@@ -267,8 +267,6 @@ class _EstablishmentCardState extends State<EstablishmentCard> with SingleTicker
     // Considera "novo" se teve inspeção recente (lastInspectionDate) ou boost recente
     final bool isNew = establishment.lastInspectionDate != null &&
       now.difference(establishment.lastInspectionDate!).inDays < 7;
-    // final bool isPremiumActive =
-    //     establishment.premiumUntil != null && establishment.premiumUntil!.isAfter(now);
 
     return Container(
       margin: const EdgeInsets.only(bottom: 20),
@@ -417,49 +415,7 @@ class _EstablishmentCardState extends State<EstablishmentCard> with SingleTicker
                         ),
                       ),
                     ),
-                  // Badge de Premium (quando não boosted mas premium)
-                  // if (!isBoostActive && isPremiumActive)
-                  //   Positioned(
-                  //     bottom: 12,
-                  //     left: 16,
-                  //     child: Container(
-                  //       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                  //       decoration: BoxDecoration(
-                  //         color: AppTheme.primaryGreen.withValues(alpha: 0.9),
-                  //         borderRadius: BorderRadius.circular(20),
-                  //         boxShadow: [
-                  //           BoxShadow(
-                  //             color: Colors.black.withValues(alpha: 0.18),
-                  //             blurRadius: 10,
-                  //             offset: const Offset(0, 3),
-                  //           ),
-                  //         ],
-                  //       ),
-                  //       child: Row(
-                  //         mainAxisSize: MainAxisSize.min,
-                  //         children: [
-                  //           const Icon(
-                  //             Icons.workspace_premium,
-                  //             size: 14,
-                  //             color: Colors.white,
-                  //           ),
-                  //           const SizedBox(width: 6),
-                  //           Text(
-                  //             Translations.getText(context, 'premiumEstablishmentBadge') ?? 'Plano Premium',
-                  //             style: const TextStyle(
-                  //               fontSize: 11,
-                  //               fontWeight: FontWeight.w600,
-                  //               color: Colors.white,
-                  //             ),
-                  //           ),
-                  //         ],
-                  //       ),
-                  //     ),
-                  //   ),
-                  // Gradiente para legibilidade (opcional, mas bom pra contraste se tiver texto sobre a img)
-                  
-                  // Badge de Dificuldade (Top Left)
-                  // Exibe o nível de dificuldade do local, reforçando o diferencial do app em informar o usuário.
+
                   Positioned(
                     top: 16,
                     left: 16,

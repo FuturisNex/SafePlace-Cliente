@@ -315,18 +315,6 @@ class Translations {
             : languageCode == 'es'
                 ? '¿Por qué anunciar en Prato Seguro?'
                 : 'Why advertise on Prato Seguro?';
-      case 'businessInstitutionalPitchDescription':
-        return languageCode == 'pt'
-            ? 'Anúncio gratuito para todas as empresas e planos pagos com mais visibilidade, fotos em destaque e posição de topo.'
-            : languageCode == 'es'
-                ? 'Anuncio gratuito para todas las empresas y planes de pago con más visibilidad, fotos destacadas y posición superior.'
-                : 'Free listing for all businesses and paid plans with more visibility, featured photos and top position.';
-      case 'businessPlans':
-        return languageCode == 'pt'
-            ? 'Planos para Empresas'
-            : languageCode == 'es'
-                ? 'Planes para Empresas'
-                : 'Business Plans';
       case 'basicPlan':
         return languageCode == 'pt' ? 'Básico' : languageCode == 'es' ? 'Básico' : 'Basic';
       case 'intermediatePlan':
@@ -335,12 +323,6 @@ class Translations {
         return languageCode == 'pt' ? 'Ouro' : languageCode == 'es' ? 'Oro' : 'Gold';
       case 'talkOnWhatsApp':
         return languageCode == 'pt' ? 'Falar no WhatsApp' : languageCode == 'es' ? 'Hablar por WhatsApp' : 'Talk on WhatsApp';
-      case 'whatsAppContactForPlans':
-        return languageCode == 'pt'
-            ? 'Fale com nossa equipe pelo WhatsApp para aderir a um plano ou tirar dúvidas.'
-            : languageCode == 'es'
-                ? 'Habla con nuestro equipo por WhatsApp para adherirte a un plan o aclarar dudas.'
-                : 'Talk to our team on WhatsApp to join a plan or ask questions.';
       case 'iWantToParticipate':
         return languageCode == 'pt'
             ? 'Quero fazer parte'
@@ -365,12 +347,6 @@ class Translations {
             : languageCode == 'es'
                 ? 'Ver pitch para inversionistas'
                 : 'See investor pitch';
-      case 'investorPitchWhatsAppMessage':
-        return languageCode == 'pt'
-            ? 'Olá! Gostaria de falar sobre investimento e parcerias com o Prato Seguro.'
-            : languageCode == 'es'
-                ? '¡Hola! Me gustaría hablar sobre inversión y alianzas con Prato Seguro.'
-                : 'Hi! I would like to talk about investment and partnerships with Prato Seguro.';
       case 'technicalCertification':
         return languageCode == 'pt'
             ? 'Certificação Técnica'
@@ -389,12 +365,6 @@ class Translations {
             : languageCode == 'es'
                 ? '¡Hola! Me gustaría solicitar la certificación técnica para mi establecimiento en Prato Seguro.'
                 : 'Hi! I would like to request technical certification for my business on Prato Seguro.';
-      case 'businessPlansWhatsAppMessage':
-        return languageCode == 'pt'
-            ? 'Olá! Gostaria de falar sobre os planos pagos para empresas no Prato Seguro.'
-            : languageCode == 'es'
-                ? '¡Hola! Me gustaría hablar sobre los planes pagos para empresas en Prato Seguro.'
-                : 'Hi! I would like to talk about business plans on Prato Seguro.';
       case 'certificationStatusLabel':
         return languageCode == 'pt'
             ? 'Status da certificação'
@@ -826,12 +796,6 @@ class Translations {
         return languageCode == 'pt' ? 'Compartilhar conquistas' : languageCode == 'es' ? 'Compartir logros' : 'Share achievements';
       case 'expiresIn':
         return languageCode == 'pt' ? 'Expira em' : languageCode == 'es' ? 'Expira en' : 'Expires in';
-      case 'seePlanDetails':
-        // return languageCode == 'pt'
-        //     ? 'Ver detalhes do plano'
-        //     : languageCode == 'es'
-        //         ? 'Ver detalles del plan'
-        //         : 'See plan details';
       case 'seal':
         return languageCode == 'pt' ? 'Selo' : languageCode == 'es' ? 'Sello' : 'Seal';
       case 'userSealBronzeLabel':
@@ -966,18 +930,6 @@ class Translations {
             : languageCode == 'es'
                 ? 'Mira cuántos establecimientos registraste, cuáles están abiertos y cómo están tus reseñas.'
                 : 'See how many venues you have, which are open and how your reviews are going.';
-      case 'businessOnboardingTitle3':
-        return languageCode == 'pt'
-            ? 'Anúncios e planos para destacar seu negócio'
-            : languageCode == 'es'
-                ? 'Anuncios y planes para destacar tu negocio'
-                : 'Ads and plans to highlight your business';
-      case 'businessOnboardingDescription3':
-        return languageCode == 'pt'
-            ? 'Use os planos e anúncios para aumentar a visibilidade do seu estabelecimento dentro do Prato Seguro.'
-            : languageCode == 'es'
-                ? 'Utiliza los planes y anuncios para aumentar la visibilidad de tu establecimiento dentro de Prato Seguro.'
-                : 'Use plans and ads to increase your venue\'s visibility inside Prato Seguro.';
       case 'appSlogan':
         return languageCode == 'pt'
             ? 'Onde comer com confiança.'
