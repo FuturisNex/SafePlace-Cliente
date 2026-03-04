@@ -133,13 +133,18 @@ class EstablishmentProvider with ChangeNotifier {
         avatarUrl: establishment.avatarUrl,
         photoUrls: establishment.photoUrls,
         difficultyLevel: establishment.difficultyLevel,
+        notes: establishment.notes,
         dietaryOptions: establishment.dietaryOptions,
         isOpen: establishment.isOpen,
         ownerId: establishment.ownerId,
         address: establishment.address,
+        phone: establishment.phone,
         openingTime: establishment.openingTime,
         closingTime: establishment.closingTime,
+        weekendOpeningTime: establishment.weekendOpeningTime,
+        weekendClosingTime: establishment.weekendClosingTime,
         openingDays: establishment.openingDays,
+        weeklySchedule: establishment.weeklySchedule,
         certificationStatus: establishment.certificationStatus,
         lastInspectionDate: establishment.lastInspectionDate,
         lastInspectionStatus: establishment.lastInspectionStatus,
@@ -150,6 +155,14 @@ class EstablishmentProvider with ChangeNotifier {
         state: establishment.state,
         city: establishment.city,
         neighborhood: establishment.neighborhood,
+        hasDelivery: establishment.hasDelivery,
+        deliveryFee: establishment.deliveryFee,
+        deliveryTimeMin: establishment.deliveryTimeMin,
+        deliveryTimeMax: establishment.deliveryTimeMax,
+        minOrderValue: establishment.minOrderValue,
+        deliveryRadius: establishment.deliveryRadius,
+        rating: establishment.rating,
+        ratingCount: establishment.ratingCount,
       );
     }).toList();
 
@@ -316,4 +329,3 @@ class EstablishmentProvider with ChangeNotifier {
     notifyListeners();
   }
 }
-

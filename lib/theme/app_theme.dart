@@ -14,14 +14,19 @@ class AppTheme {
   static const Color textSecondary = Color(0xFF757575);
 
   static ThemeData get lightTheme {
+    return lightThemeWithPrimary(primaryGreen);
+  }
+
+  static ThemeData lightThemeWithPrimary(Color primaryColor) {
+    final secondaryColor = _shiftLightness(primaryColor, 0.14);
     return ThemeData(
       useMaterial3: true,
       scaffoldBackgroundColor: background,
-      primaryColor: primaryGreen,
+      primaryColor: primaryColor,
       colorScheme: ColorScheme.fromSeed(
-        seedColor: primaryGreen,
-        primary: primaryGreen,
-        secondary: secondaryGreen,
+        seedColor: primaryColor,
+        primary: primaryColor,
+        secondary: secondaryColor,
         surface: surface,
         background: background,
         onPrimary: Colors.white,
@@ -94,10 +99,10 @@ class AppTheme {
       // Botões Elevados (Pill Shape)
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: primaryGreen,
+          backgroundColor: primaryColor,
           foregroundColor: Colors.white,
           elevation: 4,
-          shadowColor: primaryGreen.withOpacity(0.4),
+          shadowColor: primaryColor.withOpacity(0.4),
           padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(100), // Pill shape
@@ -112,8 +117,8 @@ class AppTheme {
       // Botões Outlined
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          foregroundColor: primaryGreen,
-          side: const BorderSide(color: primaryGreen),
+          foregroundColor: primaryColor,
+          side: BorderSide(color: primaryColor),
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(100),
@@ -139,10 +144,10 @@ class AppTheme {
       ),
 
       // Navigation Bar
-      bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+      bottomNavigationBarTheme: BottomNavigationBarThemeData(
         backgroundColor: surface,
         elevation: 0,
-        selectedItemColor: primaryGreen,
+        selectedItemColor: primaryColor,
         unselectedItemColor: Colors.grey,
         type: BottomNavigationBarType.fixed,
         showSelectedLabels: false,
@@ -153,5 +158,11 @@ class AppTheme {
         surfaceTintColor: Colors.transparent,
       ),
     );
+  }
+
+  static Color _shiftLightness(Color color, double amount) {
+    final hsl = HSLColor.fromColor(color);
+    final lightness = (hsl.lightness + amount).clamp(0.0, 1.0);
+    return hsl.withLightness(lightness).toColor();
   }
 }

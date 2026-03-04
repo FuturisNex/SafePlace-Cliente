@@ -302,19 +302,25 @@ class _EstablishmentProfileState extends State<EstablishmentProfile> {
     }
 
     final level = establishment.difficultyLevel;
+    final hasDifficultySeal = level.hasSeal;
     final Color levelColor = level.color;
     final String levelLabel = level.getLabel(context);
-    late final String levelDescriptionKey;
-    switch (level) {
-      case DifficultyLevel.popular:
-        levelDescriptionKey = 'difficultyPopularDescription';
-        break;
-      case DifficultyLevel.intermediate:
-        levelDescriptionKey = 'difficultyIntermediateDescription';
-        break;
-      case DifficultyLevel.technical:
-        levelDescriptionKey = 'difficultyTechnicalDescription';
-        break;
+    String? levelDescriptionKey;
+    if (hasDifficultySeal) {
+      switch (level) {
+        case DifficultyLevel.none:
+          levelDescriptionKey = null;
+          break;
+        case DifficultyLevel.popular:
+          levelDescriptionKey = 'difficultyPopularDescription';
+          break;
+        case DifficultyLevel.intermediate:
+          levelDescriptionKey = 'difficultyIntermediateDescription';
+          break;
+        case DifficultyLevel.technical:
+          levelDescriptionKey = 'difficultyTechnicalDescription';
+          break;
+      }
     }
 
     return SingleChildScrollView(
@@ -412,14 +418,10 @@ class _EstablishmentProfileState extends State<EstablishmentProfile> {
                           child: Text(
                             establishment.name,
                             style: const TextStyle(
-                              fontSize: 20,
+                              fontSize: 18,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.close),
-                          onPressed: widget.onClose,
                         ),
                       ],
                     ),
@@ -445,23 +447,24 @@ class _EstablishmentProfileState extends State<EstablishmentProfile> {
                       runSpacing: 8,
                       crossAxisAlignment: WrapCrossAlignment.center,
                       children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 6),
-                          decoration: BoxDecoration(
-                            color: establishment.difficultyLevel.color
-                                .withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: Text(
-                            establishment.difficultyLevel.getLabel(context),
-                            style: TextStyle(
-                              color: establishment.difficultyLevel.color,
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
+                        if (hasDifficultySeal)
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 6),
+                            decoration: BoxDecoration(
+                              color: establishment.difficultyLevel.color
+                                  .withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: Text(
+                              establishment.difficultyLevel.getLabel(context),
+                              style: TextStyle(
+                                color: establishment.difficultyLevel.color,
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
-                        ),
                         if (establishment.certificationStatus ==
                             TechnicalCertificationStatus.certified)
                           Container(
@@ -527,68 +530,70 @@ class _EstablishmentProfileState extends State<EstablishmentProfile> {
               ),
             ],
           ),
-          const SizedBox(height: 8),
-          Container(
-            margin: const EdgeInsets.only(top: 4),
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: levelColor.withOpacity(0.04),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: levelColor.withOpacity(0.9),
-                width: 1.2,
+          if (hasDifficultySeal && levelDescriptionKey != null) ...[
+            const SizedBox(height: 8),
+            Container(
+              margin: const EdgeInsets.only(top: 4),
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: levelColor.withOpacity(0.04),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: levelColor.withOpacity(0.9),
+                  width: 1.2,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: levelColor.withOpacity(0.25),
+                    blurRadius: 14,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
               ),
-              boxShadow: [
-                BoxShadow(
-                  color: levelColor.withOpacity(0.25),
-                  blurRadius: 14,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: levelColor.withOpacity(0.16),
-                    shape: BoxShape.circle,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: levelColor.withOpacity(0.16),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.verified,
+                      color: levelColor,
+                      size: 20,
+                    ),
                   ),
-                  child: Icon(
-                    Icons.verified,
-                    color: levelColor,
-                    size: 20,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        '${Translations.getText(context, 'sealLevel')}: $levelLabel',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w700,
-                          color: levelColor,
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '${Translations.getText(context, 'sealLevel')}: $levelLabel',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                            color: levelColor,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        Translations.getText(context, levelDescriptionKey),
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey.shade800,
-                          height: 1.3,
+                        const SizedBox(height: 4),
+                        Text(
+                          Translations.getText(context, levelDescriptionKey!),
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey.shade800,
+                            height: 1.3,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
+          ],
           const SizedBox(height: 12),
           Row(
             children: [
@@ -936,6 +941,49 @@ class _EstablishmentProfileState extends State<EstablishmentProfile> {
                         ),
                       ),
                     ],
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+          ],
+
+          if (establishment.notes?.trim().isNotEmpty == true) ...[
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.amber.shade50,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.amber.shade200),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(Icons.notes, size: 18, color: Colors.amber.shade800),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Observação',
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.amber.shade900,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          establishment.notes!.trim(),
+                          softWrap: true,
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: Colors.grey.shade800,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),

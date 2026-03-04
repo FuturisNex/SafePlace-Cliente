@@ -154,7 +154,7 @@ class ReviewProvider with ChangeNotifier {
         await GamificationService.updateUserSeal(userId);
         
         // Verificar se o estabelecimento deve receber o selo Popular automaticamente
-        // Selo Popular: 5 avaliações positivas (≥3 estrelas)
+        // Selo Popular: média das avaliações >= 4.0
         await _checkAndUpdateEstablishmentPopularSeal(establishmentId);
       } catch (e) {
         debugPrint('⚠️ Erro ao adicionar pontos: $e');
@@ -243,35 +243,37 @@ class ReviewProvider with ChangeNotifier {
       debugPrint('⚠️ Erro ao carregar avaliações do Firestore: $e');
     }
   }
-  
-  /// Verifica se o estabelecimento deve receber o selo Popular automaticamente
-  /// Critério: 5 avaliações positivas (≥3 estrelas)
+
+  /// Verifica e sincroniza o selo Popular automaticamente:
+  /// media >= 4.0 => Popular, abaixo disso => sem selo ("")
   Future<void> _checkAndUpdateEstablishmentPopularSeal(String establishmentId) async {
     try {
-      // Buscar todas as avaliações do estabelecimento
+      // Buscar todas as avaliacoes do estabelecimento
       final reviews = await FirebaseService.getReviewsForEstablishment(establishmentId);
-      
-      // Contar avaliações positivas (≥3 estrelas)
-      final positiveReviews = reviews.where((r) => r.rating >= 3.0).length;
-      
-      debugPrint('📊 Estabelecimento $establishmentId: $positiveReviews avaliações positivas');
-      
-      // Se tiver 5 ou mais avaliações positivas, atribuir selo Popular
-      if (positiveReviews >= 5) {
-        // Buscar o estabelecimento atual
-        final establishment = await FirebaseService.getEstablishmentById(establishmentId);
-        
-        if (establishment != null && establishment.difficultyLevel != DifficultyLevel.popular) {
-          // Atualizar para selo Popular
-          await FirebaseService.updateEstablishment(establishmentId, {
-            'difficultyLevel': 'popular',
-          });
-          debugPrint('🏆 Selo Popular atribuído automaticamente ao estabelecimento $establishmentId');
-        }
+
+      final reviewCount = reviews.length;
+      final averageRating = reviewCount == 0
+          ? 0.0
+          : reviews.fold<double>(0.0, (sum, r) => sum + r.rating) / reviewCount;
+      final shouldBePopular = reviewCount > 0 && averageRating >= 4.0;
+
+      debugPrint('Estabelecimento $establishmentId: media=${averageRating.toStringAsFixed(2)}, avaliacoes=$reviewCount');
+
+      final establishment = await FirebaseService.getEstablishmentById(establishmentId);
+      if (establishment == null) return;
+
+      final currentLevel = establishment.difficultyLevel;
+      final desiredLevel = shouldBePopular ? DifficultyLevel.popular : DifficultyLevel.none;
+
+      if (currentLevel != desiredLevel) {
+        await FirebaseService.updateEstablishment(establishmentId, {
+          'difficultyLevel': desiredLevel == DifficultyLevel.popular ? 'Popular' : '',
+          'rating': averageRating,
+          'ratingCount': reviewCount,
+        });
       }
     } catch (e) {
-      debugPrint('⚠️ Erro ao verificar selo Popular: $e');
+      debugPrint('Erro ao verificar selo Popular: $e');
     }
   }
 }
-

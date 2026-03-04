@@ -7,10 +7,10 @@ import 'providers/establishment_provider.dart';
 import 'providers/locale_provider.dart';
 import 'providers/review_provider.dart';
 import 'providers/feature_flags_provider.dart';
+import 'providers/theme_provider.dart';
 import 'services/notification_service.dart';
 import 'services/mapbox_service.dart';
 import 'services/app_cache_service.dart';
-import 'theme/app_theme.dart';
 import 'screens/splash_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/home_screen.dart';
@@ -51,14 +51,15 @@ class SafePlateApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => EstablishmentProvider()),
         ChangeNotifierProvider(create: (_) => ReviewProvider()),
         ChangeNotifierProvider(create: (_) => FeatureFlagsProvider()),
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
       ],
-      child: Consumer<LocaleProvider>(
-        builder: (context, localeProvider, _) {
+      child: Consumer2<LocaleProvider, ThemeProvider>(
+        builder: (context, localeProvider, themeProvider, _) {
           return MaterialApp(
         title: 'Prato Seguro',
         debugShowCheckedModeBanner: false,
             locale: localeProvider.locale,
-        theme: AppTheme.lightTheme,
+        theme: themeProvider.themeData,
         home: const SplashScreen(),
         routes: {
           '/login': (context) => const LoginScreen(),

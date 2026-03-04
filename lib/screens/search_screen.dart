@@ -12,7 +12,6 @@ import '../models/user.dart';
 import '../widgets/featured_establishments_section.dart';
 import '../widgets/dietary_filter_chip.dart';
 import '../widgets/mapbox_map_widget.dart';
-import '../widgets/welcome_dialog.dart';
 import '../widgets/empty_map_state.dart';
 import '../utils/translations.dart';
 import '../theme/app_theme.dart';
@@ -50,6 +49,11 @@ class _SearchScreenState extends State<SearchScreen> {
   bool _isFeaturedSectionVisible = true;
   bool _isTopUIVisible = true;
   Timer? _featuredVisibilityTimer;
+  Color get _primaryColor => Theme.of(context).colorScheme.primary;
+  Color get _primaryDark {
+    final hsl = HSLColor.fromColor(_primaryColor);
+    return hsl.withLightness((hsl.lightness - 0.14).clamp(0.0, 1.0)).toColor();
+  }
 
   @override
   void initState() {
@@ -59,16 +63,6 @@ class _SearchScreenState extends State<SearchScreen> {
       setState(() {
         _hasSearchText = _searchController.text.isNotEmpty;
       });
-    });
-      
-    // Mostrar dialog de boas-vindas na primeira vez
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        WelcomeDialog.showIfNeeded(
-          context,
-          onSuggestEstablishment: _openSuggestEstablishment,
-        );
-      }
     });
   }
   
@@ -140,7 +134,7 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget build(BuildContext context) {
     return Consumer<EstablishmentProvider>(
       builder: (context, establishmentProvider, _) {
-        Color bannerColor = AppTheme.primaryGreen.withOpacity(0.08);
+        Color bannerColor = _primaryColor.withOpacity(0.08);
 
         final bool hasFeaturedEstablishments = false;
 
@@ -323,8 +317,8 @@ class _SearchScreenState extends State<SearchScreen> {
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                       colors: [
-                        AppTheme.primaryGreen,
-                        AppTheme.primaryGreen.withBlue(100),
+                        _primaryColor,
+                        _primaryDark,
                       ],
                     )
                   : LinearGradient(
@@ -339,7 +333,7 @@ class _SearchScreenState extends State<SearchScreen> {
                 boxShadow: [
                   if (isSelected)
                     BoxShadow(
-                      color: AppTheme.primaryGreen.withOpacity(0.3),
+                      color: _primaryColor.withOpacity(0.3),
                       blurRadius: 12,
                       offset: const Offset(0, 6),
                     )
@@ -412,16 +406,16 @@ class _SearchScreenState extends State<SearchScreen> {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: isSelected ? AppTheme.primaryGreen : Colors.white,
+          color: isSelected ? _primaryColor : Colors.white,
           borderRadius: BorderRadius.circular(100),
           border: Border.all(
-            color: isSelected ? AppTheme.primaryGreen : Colors.grey.shade300,
+            color: isSelected ? _primaryColor : Colors.grey.shade300,
             width: 1,
           ),
           boxShadow: [
             if (isSelected)
               BoxShadow(
-                color: AppTheme.primaryGreen.withOpacity(0.2),
+                color: _primaryColor.withOpacity(0.2),
                 blurRadius: 8,
                 offset: const Offset(0, 4),
               )
@@ -684,7 +678,7 @@ class _AdvancedFiltersSheetState extends State<_AdvancedFiltersSheet> {
                       Navigator.pop(context);
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
+                      backgroundColor: Theme.of(context).colorScheme.primary,
                     ),
                     child: Text(Translations.getText(context, 'apply')),
                   ),
@@ -885,4 +879,3 @@ class _AdvancedFiltersSheetState extends State<_AdvancedFiltersSheet> {
     );
   }
 }
-

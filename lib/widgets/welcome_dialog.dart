@@ -16,16 +16,30 @@ class WelcomeDialog extends StatefulWidget {
 
   /// Verifica se deve mostrar o dialog nesta sessão
   /// Agora mostra sempre ao logar, mas apenas uma vez por sessão
+  static const String _lastShownDateKey = 'welcome_dialog_last_shown_date_v1';
   static bool _shownThisSession = false;
+  static bool _isDialogVisible = false;
+
+  static String _todayDateKey() {
+    final now = DateTime.now();
+    final month = now.month.toString().padLeft(2, '0');
+    final day = now.day.toString().padLeft(2, '0');
+    return '${now.year}-$month-$day';
+  }
 
   /// Verifica se deve mostrar o dialog (uma vez por sessão de login)
   static Future<bool> shouldShow() async {
-    return !_shownThisSession;
+    if (_shownThisSession) return false;
+    final prefs = await SharedPreferences.getInstance();
+    final lastShownDate = prefs.getString(_lastShownDateKey);
+    return lastShownDate != _todayDateKey();
   }
 
   /// Marca o dialog como já exibido nesta sessão
   static Future<void> markAsShown() async {
     _shownThisSession = true;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_lastShownDateKey, _todayDateKey());
   }
 
   /// Reseta o estado para nova sessão (chamar ao fazer logout)
@@ -36,29 +50,40 @@ class WelcomeDialog extends StatefulWidget {
   /// Mostra o dialog ao logar (uma vez por sessão)
   static Future<void> showIfNeeded(BuildContext context,
       {VoidCallback? onSuggestEstablishment}) async {
-    if (await shouldShow()) {
-      if (context.mounted) {
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (context) =>
-              WelcomeDialog(onSuggestEstablishment: onSuggestEstablishment),
-        );
-      }
-    }
+    await _showGuarded(
+      context,
+      onSuggestEstablishment: onSuggestEstablishment,
+    );
   }
 
   /// Força a exibição do dialog (para uso após login)
   static Future<void> showOnLogin(BuildContext context,
       {VoidCallback? onSuggestEstablishment}) async {
-    if (!_shownThisSession && context.mounted) {
-      _shownThisSession = true;
+    await _showGuarded(
+      context,
+      onSuggestEstablishment: onSuggestEstablishment,
+    );
+  }
+
+  static Future<void> _showGuarded(
+    BuildContext context, {
+    VoidCallback? onSuggestEstablishment,
+  }) async {
+    if (_isDialogVisible) return;
+    if (!await shouldShow()) return;
+    if (!context.mounted) return;
+
+    _isDialogVisible = true;
+    _shownThisSession = true;
+    try {
       await showDialog(
         context: context,
         barrierDismissible: false,
         builder: (context) =>
             WelcomeDialog(onSuggestEstablishment: onSuggestEstablishment),
       );
+    } finally {
+      _isDialogVisible = false;
     }
   }
 

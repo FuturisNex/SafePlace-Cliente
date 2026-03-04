@@ -53,6 +53,11 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   bool _dietNudgeChecked = false;
   bool _working = false;
   final ImagePicker _imagePicker = ImagePicker();
+  Color get _primaryColor => Theme.of(context).colorScheme.primary;
+  Color get _primaryStrongColor {
+    final hsl = HSLColor.fromColor(_primaryColor);
+    return hsl.withLightness((hsl.lightness - 0.20).clamp(0.0, 1.0)).toColor();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -112,8 +117,8 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                           ],
                         ),
                         child: TabBar(
-                          indicatorColor: AppTheme.primaryGreen,
-                          labelColor: AppTheme.primaryGreen,
+                          indicatorColor: _primaryColor,
+                          labelColor: _primaryColor,
                           unselectedLabelColor: Colors.grey.shade600,
                           indicatorWeight: 3,
                           labelStyle: const TextStyle(
@@ -266,7 +271,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                       child: Container(
                         padding: const EdgeInsets.all(6),
                         decoration: BoxDecoration(
-                          color: AppTheme.primaryGreen,
+                          color: _primaryColor,
                           shape: BoxShape.circle,
                           border: Border.all(color: Colors.white, width: 2),
                         ),
@@ -370,7 +375,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
         side: BorderSide(color: Colors.grey.shade200),
       ),
       child: ListTile(
-        leading: const Icon(Icons.phone, color: AppTheme.primaryGreen),
+        leading: Icon(Icons.phone, color: _primaryColor),
         title: const Text('Telefone'),
         subtitle: Text(
           currentPhone.isEmpty ? 'Não informado' : currentPhone,
@@ -539,11 +544,11 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                   width: 40,
                   height: 40,
                   decoration: BoxDecoration(
-                    color: isActive ? AppTheme.primaryGreen : Colors.white,
+                    color: isActive ? _primaryColor : Colors.white,
                     shape: BoxShape.circle,
                     border: Border.all(
                         color: isActive
-                            ? AppTheme.primaryGreen
+                            ? _primaryColor
                             : Colors.grey.shade300,
                         width: 2),
                   ),
@@ -605,10 +610,10 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                 ),
                 Text(
                   '${user.points} pts',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: AppTheme.primaryGreen,
+                    color: _primaryColor,
                   ),
                 ),
               ],
@@ -618,7 +623,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
               value: (user.points % 1000) / 1000,
               backgroundColor: Colors.grey.shade200,
               valueColor:
-                  const AlwaysStoppedAnimation<Color>(AppTheme.primaryGreen),
+                  AlwaysStoppedAnimation<Color>(_primaryColor),
               minHeight: 8,
               borderRadius: BorderRadius.circular(4),
             ),
@@ -699,8 +704,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
               children: [
                 Row(
                   children: [
-                    const Icon(Icons.place,
-                        color: AppTheme.primaryGreen, size: 20),
+                    Icon(Icons.place, color: _primaryColor, size: 20),
                     const SizedBox(width: 8),
                     Text(
                       Translations.getText(context, 'checkInHistory'),
@@ -754,7 +758,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                 icon: const Icon(Icons.hiking),
                 label: Text(Translations.getText(context, 'registerTrail')),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppTheme.primaryGreen,
+                  backgroundColor: _primaryColor,
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   shape: RoundedRectangleBorder(
@@ -1375,10 +1379,10 @@ Baixe o Prato Seguro!
         leading: Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: Colors.green.shade50,
+            color: _primaryColor.withValues(alpha: 0.10),
             shape: BoxShape.circle,
           ),
-          child: Icon(icon, color: Colors.green.shade700),
+          child: Icon(icon, color: _primaryStrongColor),
         ),
         title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
         subtitle: Text(subtitle),
@@ -1430,12 +1434,12 @@ Baixe o Prato Seguro!
         return Transform.scale(
           scale: scale,
           child: Card(
-            color: Colors.green.shade50,
+            color: _primaryColor.withValues(alpha: 0.10),
             elevation: 0,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
               side: BorderSide(
-                color: Colors.green.shade200,
+                color: _primaryColor.withValues(alpha: 0.30),
                 width: 1.2,
               ),
             ),
@@ -1451,14 +1455,14 @@ Baixe o Prato Seguro!
                       color: Colors.white,
                       shape: BoxShape.circle,
                       border: Border.all(
-                        color: Colors.green.shade300,
+                        color: _primaryColor.withValues(alpha: 0.42),
                         width: 2,
                       ),
                     ),
                     child: Center(
                       child: Icon(
                         Icons.emoji_emotions,
-                        color: Colors.green.shade600,
+                        color: _primaryColor,
                         size: 32,
                       ),
                     ),
@@ -1473,7 +1477,7 @@ Baixe o Prato Seguro!
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
-                            color: Colors.green.shade800,
+                            color: _primaryStrongColor,
                           ),
                         ),
                         const SizedBox(height: 4),
@@ -1481,7 +1485,7 @@ Baixe o Prato Seguro!
                           message,
                           style: TextStyle(
                             fontSize: 13,
-                            color: Colors.green.shade800.withOpacity(0.9),
+                            color: _primaryStrongColor.withValues(alpha: 0.9),
                           ),
                         ),
                       ],
@@ -1560,7 +1564,7 @@ Baixe o Prato Seguro!
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
         side: BorderSide(
-          color: Colors.green.shade100,
+          color: _primaryColor.withValues(alpha: 0.22),
         ),
       ),
       child: Padding(
@@ -1573,7 +1577,7 @@ Baixe o Prato Seguro!
                 Icon(
                   Icons.health_and_safety,
                   size: 20,
-                  color: Colors.green.shade700,
+                  color: _primaryStrongColor,
                 ),
                 const SizedBox(width: 8),
                 Text(
@@ -1591,7 +1595,7 @@ Baixe o Prato Seguro!
                     Translations.getText(context, 'manage'),
                     style: TextStyle(
                       fontSize: 12,
-                      color: Colors.green.shade700,
+                      color: _primaryStrongColor,
                     ),
                   ),
                 ),
@@ -1614,9 +1618,9 @@ Baixe o Prato Seguro!
                   final filter = DietaryFilter.fromString(code);
                   return Chip(
                     label: Text(filter.getLabel(context)),
-                    backgroundColor: Colors.green.shade50,
+                    backgroundColor: _primaryColor.withValues(alpha: 0.10),
                     labelStyle: TextStyle(
-                      color: Colors.green.shade800,
+                      color: _primaryStrongColor,
                       fontSize: 12,
                     ),
                   );
@@ -1663,7 +1667,7 @@ Baixe o Prato Seguro!
                       Icon(
                         Icons.health_and_safety,
                         size: 20,
-                        color: Colors.green.shade700,
+                        color: _primaryStrongColor,
                       ),
                       const SizedBox(width: 8),
                       Expanded(

@@ -22,7 +22,8 @@ class EstablishmentDetailScreen extends StatelessWidget {
       maxChildSize: 0.95, // Máximo de 95% da tela
       builder: (context, scrollController) {
         final level = establishment.difficultyLevel;
-        final Color baseColor = level.color;
+        final hasDifficultySeal = level.hasSeal;
+        final Color baseColor = hasDifficultySeal ? level.color : Colors.grey.shade300;
         final Color borderColor = baseColor.withOpacity(0.9);
         final Color glowColor = baseColor.withOpacity(0.5);
 
@@ -159,4 +160,3 @@ class EstablishmentDetailScreen extends StatelessWidget {
     );
   }
 }
-

@@ -6,6 +6,7 @@ import '../providers/auth_provider.dart';
 import '../providers/establishment_provider.dart';
 import '../providers/locale_provider.dart';
 import '../providers/feature_flags_provider.dart';
+import '../providers/theme_provider.dart';
 import '../models/establishment.dart';
 import '../models/user.dart';
 import '../utils/translations.dart';
@@ -42,6 +43,16 @@ class HomeScreen extends StatefulWidget {
 enum _SeasonalVariant { none, christmas, carnival }
 
 class _HomeScreenState extends State<HomeScreen> {
+  static const String _fairModalLastShownDateKey =
+      'promo_fair_modal_last_shown_date_v1';
+
+  String _todayDateKey() {
+    final now = DateTime.now();
+    final month = now.month.toString().padLeft(2, '0');
+    final day = now.day.toString().padLeft(2, '0');
+    return '${now.year}-$month-$day';
+  }
+
   int get _initialIndex {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     return authProvider.isAuthenticated ? 0 : 1; // Busca se logado, Login se não
@@ -310,6 +321,11 @@ class _HomeScreenState extends State<HomeScreen> {
     if (appConfig != null && appConfig['homeFairEnabled'] == false) {
       return;
     }
+    final today = _todayDateKey();
+    final lastShownDate = prefs.getString(_fairModalLastShownDateKey);
+    if (lastShownDate == today) {
+      return;
+    }
     final imageUrl = appConfig != null && appConfig['homeFairImageUrl'] is String
         ? (appConfig['homeFairImageUrl'] as String).trim()
         : null;
@@ -366,6 +382,7 @@ class _HomeScreenState extends State<HomeScreen> {
       },
       imageUrl: imageUrl,
     );
+    await prefs.setString(_fairModalLastShownDateKey, today);
   }
 
   // Função de onboarding de business removida
@@ -659,15 +676,17 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
     final featureFlags = Provider.of<FeatureFlagsProvider>(context);
+    final themeProvider = Provider.of<ThemeProvider>(context);
     final bool deliveryEnabled = featureFlags.deliveryEnabled;
     Color bodyBackgroundColor = AppTheme.background;
+    final themePrimaryColor = themeProvider.primaryColor;
     return StreamBuilder<String?>(
       stream: FirebaseService.seasonalThemeStream(),
       builder: (context, snapshot) {
         final seasonalThemeKey = snapshot.data;
         final seasonalVariant = _getSeasonalVariant(seasonalThemeKey);
         Color navbarColor = Colors.white;
-        Color navbarSelectedColor = AppTheme.primaryGreen;
+        Color navbarSelectedColor = themePrimaryColor;
         Color navbarShadowColor = Colors.black.withValues(alpha: 0.08);
         if (seasonalVariant == _SeasonalVariant.christmas) {
           navbarColor = const Color(0xFFFFF8F0);
@@ -691,8 +710,15 @@ class _HomeScreenState extends State<HomeScreen> {
                 bottom: false,
                 child: Builder(
                   builder: (context) {
-                    final header = _buildHeader(context, authProvider, seasonalThemeKey);
-                    final screens = _buildScreens(authProvider, deliveryEnabled, header: header);
+                    final header = _buildHeader(
+                      context,
+                      authProvider,
+                      seasonalThemeKey,
+                      themePrimaryColor,
+                      themeProvider.themeImageUrl,
+                    );
+                    final screens =
+                        _buildScreens(authProvider, deliveryEnabled, header: header);
                     final currentScreenIndex = _selectedIndex.clamp(0, screens.length - 1);
                     final currentScreen = screens[currentScreenIndex];
                     final isSearchScreen = currentScreenIndex == 0;
@@ -786,7 +812,13 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildHeader(BuildContext context, AuthProvider authProvider, String? seasonalThemeKey) {
+  Widget _buildHeader(
+    BuildContext context,
+    AuthProvider authProvider,
+    String? seasonalThemeKey,
+    Color themePrimaryColor,
+    String? themeImageUrl,
+  ) {
     final statusBarHeight = MediaQuery.of(context).padding.top;
     final establishmentProvider = Provider.of<EstablishmentProvider>(context, listen: false);
     final user = authProvider.user;
@@ -801,8 +833,10 @@ class _HomeScreenState extends State<HomeScreen> {
       headerStartColor = const Color(0xFF8B008B);
       headerEndColor = const Color(0xFFFFD700);
     } else {
-      headerStartColor = AppTheme.primaryGreen;
-      headerEndColor = AppTheme.secondaryGreen;
+      headerStartColor = themePrimaryColor;
+      final hsl = HSLColor.fromColor(themePrimaryColor);
+      headerEndColor =
+          hsl.withLightness((hsl.lightness + 0.14).clamp(0.0, 1.0)).toColor();
     }
     Color filterIconColor = AppTheme.secondaryGreen;
     Color filterBadgeIconColor = AppTheme.secondaryGreen;
@@ -834,11 +868,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Row(
                       children: [
                         // Logo
-                        const AppLogo(
-                          width: 48,
-                          height: 48,
-                          fit: BoxFit.contain,
-                        ),
+                        _buildHeaderLogo(themeImageUrl),
                         const SizedBox(width: 8),
                         Expanded(
                           child: Column(
@@ -942,7 +972,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                               child: Row(
                                 children: [
-                                  const Icon(Icons.search, color: AppTheme.primaryGreen),
+                                  Icon(Icons.search, color: themePrimaryColor),
                                   const SizedBox(width: 12),
                                   Expanded(
                                     child: TextField(
@@ -1032,11 +1062,41 @@ class _HomeScreenState extends State<HomeScreen> {
                       scrollDirection: Axis.horizontal,
                       child: Row(
                         children: [
-                          _buildCategoryItem(context, Icons.restaurant, 'categoryRestaurant', 'Restaurante'),
-                          _buildCategoryItem(context, Icons.bakery_dining, 'categoryBakery', 'Padaria'),
-                          _buildCategoryItem(context, Icons.local_cafe, 'categoryCafe', 'Café'),
-                          _buildCategoryItem(context, Icons.hotel, 'categoryHotel', 'Hotel'),
-                          _buildCategoryItem(context, Icons.storefront, 'categoryMarket', 'Mercado'),
+                          _buildCategoryItem(
+                            context,
+                            Icons.restaurant,
+                            'categoryRestaurant',
+                            'Restaurante',
+                            themePrimaryColor,
+                          ),
+                          _buildCategoryItem(
+                            context,
+                            Icons.bakery_dining,
+                            'categoryBakery',
+                            'Padaria',
+                            themePrimaryColor,
+                          ),
+                          _buildCategoryItem(
+                            context,
+                            Icons.local_cafe,
+                            'categoryCafe',
+                            'Café',
+                            themePrimaryColor,
+                          ),
+                          _buildCategoryItem(
+                            context,
+                            Icons.hotel,
+                            'categoryHotel',
+                            'Hotel',
+                            themePrimaryColor,
+                          ),
+                          _buildCategoryItem(
+                            context,
+                            Icons.storefront,
+                            'categoryMarket',
+                            'Mercado',
+                            themePrimaryColor,
+                          ),
                         ],
                       ),
                     ),
@@ -1051,7 +1111,39 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildCategoryItem(BuildContext context, IconData icon, String labelKey, String categoryValue) {
+  Widget _buildHeaderLogo(String? themeImageUrl) {
+    if (themeImageUrl == null || themeImageUrl.isEmpty) {
+      return const AppLogo(
+        width: 48,
+        height: 48,
+        fit: BoxFit.contain,
+      );
+    }
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(10),
+      child: Image.network(
+        themeImageUrl,
+        width: 48,
+        height: 48,
+        fit: BoxFit.cover,
+        gaplessPlayback: true,
+        errorBuilder: (_, __, ___) => const AppLogo(
+          width: 48,
+          height: 48,
+          fit: BoxFit.contain,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCategoryItem(
+    BuildContext context,
+    IconData icon,
+    String labelKey,
+    String categoryValue,
+    Color themePrimaryColor,
+  ) {
     final provider = Provider.of<EstablishmentProvider>(context);
     final isSelected = provider.selectedCategories.contains(categoryValue);
     return Padding(
@@ -1077,7 +1169,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               child: Icon(
                 icon,
-                color: isSelected ? AppTheme.primaryGreen : Colors.white,
+                color: isSelected ? themePrimaryColor : Colors.white,
                 size: 24,
               ),
             ),
@@ -1442,6 +1534,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       _buildSuggestionHeader('Estabelecimentos'),
                       ...establishmentSuggestions.map((establishment) {
                         final level = establishment.difficultyLevel;
+                        final hasDifficultySeal = level.hasSeal;
                         final Color levelColor = level.color;
                         
                         return ListTile(
@@ -1462,18 +1555,20 @@ class _HomeScreenState extends State<HomeScreen> {
                                 establishment.category,
                                 style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
                               ),
-                              const SizedBox(width: 8),
-                              Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
-                                decoration: BoxDecoration(
-                                  color: levelColor.withValues(alpha: 0.1),
-                                  borderRadius: BorderRadius.circular(8),
+                              if (hasDifficultySeal) ...[
+                                const SizedBox(width: 8),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                                  decoration: BoxDecoration(
+                                    color: levelColor.withValues(alpha: 0.1),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Text(
+                                    level.getLabel(context),
+                                    style: TextStyle(fontSize: 10, color: levelColor, fontWeight: FontWeight.w600),
+                                  ),
                                 ),
-                                child: Text(
-                                  level.getLabel(context),
-                                  style: TextStyle(fontSize: 10, color: levelColor, fontWeight: FontWeight.w600),
-                                ),
-                              ),
+                              ],
                             ],
                           ),
                           trailing: Text(

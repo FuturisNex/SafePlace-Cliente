@@ -10,6 +10,8 @@ import '../widgets/google_sign_in_button.dart';
 import '../providers/locale_provider.dart';
 import '../providers/auth_provider.dart' as app_auth;
 import '../models/user.dart';
+import '../models/establishment.dart';
+import '../providers/theme_provider.dart';
 import '../utils/translations.dart';
 import 'home_screen.dart';
 import 'terms_screen.dart';
@@ -31,6 +33,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   bool _loading = false;
   bool _acceptedTerms = false;
   String? _selectedLanguage;
+  final Set<DietaryFilter> _selectedDietaryPreferences = {};
 
   @override
   void dispose() {
@@ -89,6 +92,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
       _showSnack('Senha deve ter ao menos 6 caracteres', error: true);
       return;
     }
+    if (_selectedDietaryPreferences.isEmpty) {
+      _showSnack('Selecione pelo menos uma restrição alimentar', error: true);
+      return;
+    }
 
     setState(() => _loading = true);
 
@@ -102,6 +109,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
           'name': name,
           'email': email,
           'phone': phone,
+          'dietaryPreferences': _selectedDietaryPreferences
+              .map((e) => e.toString().split('.').last)
+              .toList(),
           'createdAt': FieldValue.serverTimestamp(),
           'type': _forcedAccountTypeString(), // Preservar o tipo de conta
         }, SetOptions(merge: true));
@@ -194,6 +204,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final themePrimaryColor =
+        Provider.of<ThemeProvider>(context).primaryColor;
+    final themeSecondaryColor = HSLColor.fromColor(themePrimaryColor)
+        .withLightness(
+            (HSLColor.fromColor(themePrimaryColor).lightness + 0.14)
+                .clamp(0.0, 1.0))
+        .toColor();
     final padding = MediaQuery.of(context).size.width > 700 ? 80.0 : 20.0;
     return Scaffold(
       backgroundColor: Colors.white,
@@ -248,6 +265,61 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ),
               ),
               const SizedBox(height: 12),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.grey.shade300),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      Translations.getText(context, 'dietPreferencesTitle'),
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      Translations.getText(context, 'dietPreferencesEmpty'),
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey.shade700,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: DietaryFilter.values.map((filter) {
+                        final isSelected =
+                            _selectedDietaryPreferences.contains(filter);
+                        return FilterChip(
+                          label: Text(filter.getLabel(context)),
+                          selected: isSelected,
+                          selectedColor:
+                              themePrimaryColor.withValues(alpha: 0.18),
+                          checkmarkColor: themePrimaryColor,
+                          onSelected: (value) {
+                            setState(() {
+                              if (value) {
+                                _selectedDietaryPreferences.add(filter);
+                              } else {
+                                _selectedDietaryPreferences.remove(filter);
+                              }
+                            });
+                          },
+                        );
+                      }).toList(),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 12),
               Row(
                 children: [
                   Checkbox(value: _acceptedTerms, onChanged: (v) => setState(() => _acceptedTerms = v ?? false)),
@@ -284,8 +356,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     padding: EdgeInsets.zero,
                   ),
                   child: Ink(
-                    decoration: const BoxDecoration(
-                      gradient: LinearGradient(colors: [Color(0xFF0FAF66), Color(0xFF00B874)]),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [themePrimaryColor, themeSecondaryColor],
+                      ),
                       borderRadius: BorderRadius.all(Radius.circular(12)),
                     ),
                     child: Container(

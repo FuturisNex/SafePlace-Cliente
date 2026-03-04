@@ -164,6 +164,7 @@ class Establishment {
   final String avatarUrl;
   final List<String> photoUrls;
   final DifficultyLevel difficultyLevel;
+  final String? notes; // Observacoes opcionais do estabelecimento
   final List<DietaryFilter> dietaryOptions;
   bool get isOpen {
     // Prioridade 1: Horário personalizado por dia da semana
@@ -258,6 +259,7 @@ class Establishment {
       required this.avatarUrl,
       List<String>? photoUrls,
       required this.difficultyLevel,
+      this.notes,
       required this.dietaryOptions,
       required bool isOpen,
       this.ownerId,
@@ -335,6 +337,10 @@ class Establishment {
       avatarUrl = photoUrls.first;
     }
     
+    final rawNotes = json['notes'] ?? json['observation'] ?? json['observacao'];
+    final notes = rawNotes == null ? null : rawNotes.toString();
+    final normalizedNotes = notes?.trim().isEmpty == true ? null : notes;
+
     return Establishment(
       id: json['id'] as String,
       name: json['name'] as String,
@@ -344,7 +350,8 @@ class Establishment {
       distance: (json['distance'] as num?)?.toDouble() ?? 0.0,
       avatarUrl: avatarUrl,
       photoUrls: photoUrls,
-      difficultyLevel: DifficultyLevel.fromString(json['difficultyLevel'] as String? ?? 'popular'),
+      difficultyLevel: DifficultyLevel.fromString(json['difficultyLevel'] as String? ?? ''),
+      notes: normalizedNotes,
       dietaryOptions: (json['dietaryOptions'] as List<dynamic>?)
               ?.map((e) => DietaryFilter.fromString(e as String))
               .toList() ??
@@ -469,7 +476,8 @@ class Establishment {
       'distance': distance,
       'avatarUrl': avatarUrl,
       'photoUrls': photoUrls,
-      'difficultyLevel': difficultyLevel.toString(),
+      'difficultyLevel': difficultyLevel.firestoreValue,
+      'notes': notes,
       'dietaryOptions': dietaryOptions.map((e) => e.toString()).toList(),
       'isOpen': isOpen, // Já calculado dinamicamente pelo getter
       'ownerId': ownerId,
@@ -520,6 +528,7 @@ class Establishment {
 }
 
 enum DifficultyLevel {
+  none,
   popular,
   intermediate,
   technical;
@@ -528,6 +537,8 @@ enum DifficultyLevel {
     if (context == null) {
       // Fallback sem contexto
       switch (this) {
+        case DifficultyLevel.none:
+          return '';
         case DifficultyLevel.popular:
           return 'Popular';
         case DifficultyLevel.intermediate:
@@ -539,6 +550,8 @@ enum DifficultyLevel {
     
     // Usar o sistema de traduções
     switch (this) {
+      case DifficultyLevel.none:
+        return '';
       case DifficultyLevel.popular:
         return Translations.getText(context, 'difficultyPopular');
       case DifficultyLevel.intermediate:
@@ -551,6 +564,8 @@ enum DifficultyLevel {
   @Deprecated('Use getLabel(context) instead')
   String get label {
     switch (this) {
+      case DifficultyLevel.none:
+        return '';
       case DifficultyLevel.popular:
         return 'Popular';
       case DifficultyLevel.intermediate:
@@ -562,6 +577,8 @@ enum DifficultyLevel {
 
   Color get color {
     switch (this) {
+      case DifficultyLevel.none:
+        return Colors.transparent;
       case DifficultyLevel.popular:
         return Colors.green;
       case DifficultyLevel.intermediate:
@@ -571,11 +588,23 @@ enum DifficultyLevel {
     }
   }
 
+  bool get hasSeal => this != DifficultyLevel.none;
+
+  String get firestoreValue {
+    if (!hasSeal) return '';
+    return toString().split('.').last;
+  }
+
   static DifficultyLevel fromString(String value) {
-    return DifficultyLevel.values.firstWhere(
-      (e) => e.toString().split('.').last == value,
-      orElse: () => DifficultyLevel.popular,
-    );
+    final normalized = value.trim().toLowerCase();
+    if (normalized.isEmpty) return DifficultyLevel.none;
+    if (normalized == 'popular') return DifficultyLevel.popular;
+    if (normalized == 'intermediate') return DifficultyLevel.intermediate;
+    if (normalized == 'technical') return DifficultyLevel.technical;
+    if (normalized == 'difficultylevel.popular') return DifficultyLevel.popular;
+    if (normalized == 'difficultylevel.intermediate') return DifficultyLevel.intermediate;
+    if (normalized == 'difficultylevel.technical') return DifficultyLevel.technical;
+    return DifficultyLevel.none;
   }
 }
 

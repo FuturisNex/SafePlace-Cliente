@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import '../models/trip.dart';
 import '../providers/auth_provider.dart';
 import '../providers/establishment_provider.dart';
-import '../theme/app_theme.dart';
 import '../services/firebase_service.dart';
 import 'trip_detail_screen.dart';
 import 'create_trip_screen.dart';
@@ -25,6 +24,11 @@ class _TripsScreenState extends State<TripsScreen> with SingleTickerProviderStat
   String? _error;
 
   static const Color _bgColor = Color(0xFFF7F8FA);
+  Color get _primaryColor => Theme.of(context).colorScheme.primary;
+  Color get _primaryDark {
+    final hsl = HSLColor.fromColor(_primaryColor);
+    return hsl.withLightness((hsl.lightness - 0.18).clamp(0.0, 1.0)).toColor();
+  }
 
   @override
   void initState() {
@@ -134,8 +138,8 @@ class _TripsScreenState extends State<TripsScreen> with SingleTickerProviderStat
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            AppTheme.darkGreen,
-            AppTheme.primaryGreen,
+            _primaryDark,
+            _primaryColor,
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -192,12 +196,12 @@ class _TripsScreenState extends State<TripsScreen> with SingleTickerProviderStat
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.add, color: AppTheme.primaryGreen, size: 18),
+                    Icon(Icons.add, color: _primaryColor, size: 18),
                     const SizedBox(width: 6),
                     Text(
                       'Nova',
                       style: TextStyle(
-                        color: AppTheme.primaryGreen,
+                        color: _primaryColor,
                         fontWeight: FontWeight.w600,
                         fontSize: 14,
                       ),
@@ -228,7 +232,7 @@ class _TripsScreenState extends State<TripsScreen> with SingleTickerProviderStat
       child: TabBar(
         controller: _tabController,
         indicator: BoxDecoration(
-          color: AppTheme.primaryGreen,
+          color: _primaryColor,
           borderRadius: BorderRadius.circular(12),
         ),
         indicatorSize: TabBarIndicatorSize.tab,
@@ -276,8 +280,8 @@ class _TripsScreenState extends State<TripsScreen> with SingleTickerProviderStat
 
   Widget _buildTripsTab(List<Trip> trips, {required bool isUpcoming, required double bottomPadding}) {
     if (_isLoading) {
-      return const Center(
-        child: CircularProgressIndicator(color: AppTheme.primaryGreen),
+      return Center(
+        child: CircularProgressIndicator(color: _primaryColor),
       );
     }
 
@@ -305,7 +309,7 @@ class _TripsScreenState extends State<TripsScreen> with SingleTickerProviderStat
 
     return RefreshIndicator(
       onRefresh: _loadTrips,
-      color: AppTheme.primaryGreen,
+      color: _primaryColor,
       child: ListView.builder(
         padding: EdgeInsets.fromLTRB(20, 16, 20, bottomPadding),
         itemCount: trips.length,
@@ -324,16 +328,16 @@ class _TripsScreenState extends State<TripsScreen> with SingleTickerProviderStat
         children: [
           const SizedBox(height: 40),
           Container(
-            width: 100,
-            height: 100,
-            decoration: BoxDecoration(
-              color: AppTheme.primaryGreen.withValues(alpha: 0.1),
+              width: 100,
+              height: 100,
+              decoration: BoxDecoration(
+              color: _primaryColor.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: Icon(
               isUpcoming ? Icons.luggage : Icons.photo_album,
               size: 48,
-              color: AppTheme.primaryGreen,
+              color: _primaryColor,
             ),
           ),
           const SizedBox(height: 24),
@@ -365,7 +369,7 @@ class _TripsScreenState extends State<TripsScreen> with SingleTickerProviderStat
               icon: const Icon(Icons.add),
               label: const Text('Criar Itinerário'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppTheme.primaryGreen,
+                backgroundColor: _primaryColor,
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                 shape: RoundedRectangleBorder(
@@ -395,7 +399,7 @@ class _TripsScreenState extends State<TripsScreen> with SingleTickerProviderStat
           ),
         ],
         border: isOngoing 
-            ? Border.all(color: AppTheme.primaryGreen, width: 2)
+            ? Border.all(color: _primaryColor, width: 2)
             : null,
       ),
       child: InkWell(
@@ -624,15 +628,15 @@ class _TripsScreenState extends State<TripsScreen> with SingleTickerProviderStat
           CircularProgressIndicator(
             value: progress,
             backgroundColor: Colors.grey.shade200,
-            color: AppTheme.primaryGreen,
+            color: _primaryColor,
             strokeWidth: 4,
           ),
           Text(
             '${(progress * 100).toInt()}%',
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 11,
               fontWeight: FontWeight.bold,
-              color: AppTheme.primaryGreen,
+              color: _primaryColor,
             ),
           ),
         ],
@@ -721,7 +725,7 @@ class _TripsScreenState extends State<TripsScreen> with SingleTickerProviderStat
         trailing: ElevatedButton(
           onPressed: () => _createTripForCity(city),
           style: ElevatedButton.styleFrom(
-            backgroundColor: AppTheme.primaryGreen,
+            backgroundColor: _primaryColor,
             foregroundColor: Colors.white,
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             shape: RoundedRectangleBorder(

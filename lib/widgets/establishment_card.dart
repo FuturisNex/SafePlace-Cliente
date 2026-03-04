@@ -259,6 +259,7 @@ class _EstablishmentCardState extends State<EstablishmentCard> with SingleTicker
     final establishment = widget.establishment;
     final now = DateTime.now();
     final difficultyLevel = establishment.difficultyLevel;
+    final hasDifficultySeal = difficultyLevel.hasSeal;
     final Color difficultyColor = difficultyLevel.color;
     final String difficultyLabel = difficultyLevel.getLabel(context);
     final bool isBoostActive = establishment.isBoosted &&
@@ -416,39 +417,40 @@ class _EstablishmentCardState extends State<EstablishmentCard> with SingleTicker
                       ),
                     ),
 
-                  Positioned(
-                    top: 16,
-                    left: 16,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.95),
-                        borderRadius: BorderRadius.circular(20),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.circle, size: 10, color: establishment.difficultyLevel.color),
-                          const SizedBox(width: 6),
-                          Text(
-                            establishment.difficultyLevel.getLabel(context),
-                            style: TextStyle(
-                              color: AppTheme.textPrimary,
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
+                  if (hasDifficultySeal)
+                    Positioned(
+                      top: 16,
+                      left: 16,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.95),
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.circle, size: 10, color: establishment.difficultyLevel.color),
+                            const SizedBox(width: 6),
+                            Text(
+                              establishment.difficultyLevel.getLabel(context),
+                              style: TextStyle(
+                                color: AppTheme.textPrimary,
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
 
                   // Botão Favorito (Top Right)
                   // Lógica exclusiva: favoritos por usuário autenticado, com feedback instantâneo.
@@ -583,52 +585,53 @@ class _EstablishmentCardState extends State<EstablishmentCard> with SingleTicker
                               ),
                               const SizedBox(height: 6),
                               // Badge de dificuldade, reforçando o diferencial do app em informar o usuário
-                              Row(
-                                children: [
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 8,
-                                      vertical: 3,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: difficultyColor.withOpacity(0.08),
-                                      borderRadius: BorderRadius.circular(999),
-                                      border: Border.all(
-                                        color: difficultyColor.withOpacity(0.9),
-                                        width: 1.2,
+                              if (hasDifficultySeal)
+                                Row(
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                        vertical: 3,
                                       ),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: difficultyColor.withOpacity(0.4),
-                                          blurRadius: 12,
-                                          offset: const Offset(0, 3),
+                                      decoration: BoxDecoration(
+                                        color: difficultyColor.withOpacity(0.08),
+                                        borderRadius: BorderRadius.circular(999),
+                                        border: Border.all(
+                                          color: difficultyColor.withOpacity(0.9),
+                                          width: 1.2,
                                         ),
-                                      ],
-                                    ),
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Icon(
-                                          Icons.verified,
-                                          size: 14,
-                                          color: difficultyColor,
-                                        ),
-                                        const SizedBox(width: 4),
-                                        Text(
-                                          difficultyLabel,
-                                          style: TextStyle(
-                                            fontSize: 10,
-                                            fontWeight: FontWeight.w600,
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: difficultyColor.withOpacity(0.4),
+                                            blurRadius: 12,
+                                            offset: const Offset(0, 3),
+                                          ),
+                                        ],
+                                      ),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Icon(
+                                            Icons.verified,
+                                            size: 14,
                                             color: difficultyColor,
                                           ),
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                      ],
+                                          const SizedBox(width: 4),
+                                          Text(
+                                            difficultyLabel,
+                                            style: TextStyle(
+                                              fontSize: 10,
+                                              fontWeight: FontWeight.w600,
+                                              color: difficultyColor,
+                                            ),
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ],
+                                      ),
                                     ),
-                                  ),
-                                ],
-                              ),
+                                  ],
+                                ),
                             ],
                           ),
                         ),

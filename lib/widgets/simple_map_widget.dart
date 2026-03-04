@@ -77,7 +77,9 @@ class SimpleMapWidget extends StatelessWidget {
               children: establishments.map((e) {
                 return Chip(
                   avatar: CircleAvatar(
-                    backgroundColor: e.difficultyLevel.color,
+                    backgroundColor: e.difficultyLevel.hasSeal
+                        ? e.difficultyLevel.color
+                        : Colors.grey.shade500,
                     child: const Icon(Icons.location_on, size: 16, color: Colors.white),
                   ),
                   label: Text(e.name),
@@ -91,5 +93,4 @@ class SimpleMapWidget extends StatelessWidget {
     );
   }
 }
-
 
